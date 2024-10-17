@@ -1,8 +1,8 @@
 "use client";
 import { Flex } from "@radix-ui/themes";
-import RadialGauge from "./components/radial-gauge";
+import RadialGauge from "./components/RadialGaugeSimple";
 import { useEffect, useState } from "react";
-import RadialGauge2 from "./components/radial-gauge2";
+import RadialGauge2 from "./components/RadialGauge";
 
 export default function Home() {
   const [value, setValue] = useState(10);

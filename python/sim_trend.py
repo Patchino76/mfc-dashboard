@@ -1,7 +1,7 @@
 import numpy as np
 
 class SimulateTrend:
-    def __init__(self, T=10, S0=100, mu=0.05, sigma=1, theta=0.01):
+    def __init__(self, T=10, S0=80, mu=0.1, sigma=1, theta=0.01):
         self.T = T
         self.S0 = S0
         self.mu = mu
@@ -25,5 +25,3 @@ class SimulateTrend:
         self.price = np.roll(self.price, 1)
         self.price[0] = new_price
         return self.price
-    def get_last_price(self):
-        return self.price[0]

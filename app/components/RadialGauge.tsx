@@ -4,11 +4,11 @@ import dynamic from "next/dynamic";
 
 import React from "react";
 
-const RadialGauge2 = ({ val }: { val: number }) => {
+const RadialGauge = ({ value }: { value: number }) => {
   return (
     <div>
 <GaugeComponent
-  value={val}
+  value={value}
   type="radial"
   labels={{
     tickLabels: {
@@ -29,12 +29,12 @@ const RadialGauge2 = ({ val }: { val: number }) => {
     width: 0.3
   }}
   pointer={{
-    elastic: true,
-    animationDelay: 0
+    elastic: false,
+    animationDelay: 1
   }}
 />
     </div>
   );
 };
 
-export default RadialGauge2;
+export default RadialGauge;

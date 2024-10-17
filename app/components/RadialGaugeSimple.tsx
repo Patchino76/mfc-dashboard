@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 
 import React from "react";
 
-const RadialGauge = ({val} : {val: number})  => {
+const RadialGaugeSimple = ({val} : {val: number})  => {
   return (
     <div>
       <GaugeComponent
@@ -38,4 +38,4 @@ const RadialGauge = ({val} : {val: number})  => {
   );
 };
 
-export default RadialGauge;
+export default RadialGaugeSimple;
