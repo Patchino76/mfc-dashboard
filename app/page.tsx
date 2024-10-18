@@ -21,7 +21,7 @@ export default function Home() {
 
   return (
     <Flex className="w-1/2 h-1/2">
-      <RadialGauge2 val={value} />
+      {/* <RadialGauge2 val={value} /> */}
     </Flex>
   );
 }

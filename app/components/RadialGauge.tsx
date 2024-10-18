@@ -7,7 +7,7 @@ import React from "react";
 const RadialGauge = ({ value }: { value: number }) => {
   return (
     <div>
-<GaugeComponent
+<GaugeComponent 
   value={value}
   type="radial"
   labels={{
