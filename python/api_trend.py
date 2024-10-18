@@ -23,6 +23,11 @@ def get_trend():
     data = trend.simulate_trend()
     return data
 
+@app.get("/trend_pv_sp", response_model=Dict[str,List[float]])
+def get_trend_sp_pv():
+    data = trend.simulate_pv_and_sp()
+    return data
+
 
 if __name__ == "__main__":
     import uvicorn
