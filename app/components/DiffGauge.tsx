@@ -3,13 +3,16 @@ import React from "react";
 import { Chart } from "react-google-charts";
 
 export interface DiffdataProps {
-  old: (string | number)[][];
-  new: (string | number)[][];
+  diffdata: {
+    old: (string | number)[][];
+    new: (string | number)[][];
+  };
 }
-const DiffGaugeChart = (diffdata: DiffdataProps) => {
+const DiffGaugeChart = ({diffdata} : DiffdataProps) => {
   var options = {
     title: "",
     legend: { position: "none" },
+    colors: ['blue','green'],
   };
   return (
     <Chart

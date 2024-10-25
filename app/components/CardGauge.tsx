@@ -11,7 +11,8 @@ const CardGauge = () => {
 
   <Card 
     style={{
-      width: "300px",
+      // width: "300px",
+      height: "100%",
       border: "1px solid #ccc",
       borderRadius: "8px",
       padding: "16px",
@@ -25,22 +26,10 @@ const CardGauge = () => {
         нещо по-описателно...
       </Text>
     </Flex >
-    <Box height={"250px"} width={"250px"} pt={"2"} mt={"2"}
-      className="bg-white"
-    >
+    <Flex justify={"center"} align={"center"}>
         {/* <RadialGaugeContainer /> */}
         <RadialGauge value={data && data.length >0 ? data[0] : 0} />
-    </Box>
-    {/* <Flex direction="column" gap="1" mt={"2"}>
-      <Flex align="center" gap="2" >
-        <Box width="30px" height="15px" className="bg-blue-600" />
-        <Text size="2">Показание</Text>
-      </Flex>
-      <Flex align="center" gap="2">
-        <Box width="30px" height="15px" className="bg-gray-600" />
-        <Text size="2">Цел</Text>
-      </Flex>
-    </Flex> */}
+    </Flex>
   </Card>
 )};
 

@@ -34,7 +34,8 @@ export default function RootLayout({
       >
         <QueryClientProvider>
           <Theme accentColor="violet">
-            <Container className="w-full h-full">{children}</Container>
+            {/* <Container maxWidth="100vw" align={"center"} >{children}</Container> */}
+            {children}
           </Theme>
         </QueryClientProvider>
       </body>
