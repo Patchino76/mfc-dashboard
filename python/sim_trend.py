@@ -1,7 +1,7 @@
 import numpy as np
 
 class SimulateTrend:
-    def __init__(self, T=24, S0=80, mu=0.1, sigma=1, theta=0.01):
+    def __init__(self, T=10, S0=80, mu=0.1, sigma=1, theta=0.01):
         self.T = T
         self.S0 = S0
         self.mu = mu

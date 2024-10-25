@@ -1,3 +1,4 @@
 {
-    "python.defaultInterpreterPath": "d:\\venv\\llm312\\scripts\\python.exe"
+    "python.defaultInterpreterPath": "d:\\venv\\llm312\\scripts\\python.exe",
+    "files.autoSave": "onWindowChange"
 }
