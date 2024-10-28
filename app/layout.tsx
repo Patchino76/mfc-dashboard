@@ -5,6 +5,7 @@ import "@radix-ui/themes/styles.css";
 import QueryClientProvider from "./QueryClientProvider";
 import { Container, Theme, ThemePanel } from "@radix-ui/themes";
 import "./globals.css";
+import { Navbar } from "./NaxBar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -35,6 +36,7 @@ export default function RootLayout({
         <QueryClientProvider>
           <Theme accentColor="violet">
             {/* <Container maxWidth="100vw" align={"center"} >{children}</Container> */}
+            <Navbar />
             {children}
           </Theme>
         </QueryClientProvider>
