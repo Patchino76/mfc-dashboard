@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { Bar, BarChart, Cell, LabelList, ReferenceLine, XAxis, YAxis } from "recharts"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer } from "@/components/ui/chart"
 
 const LinearGaugeWithTarget2 = ({ actual = 95.1 , target = 90, min = 40, max = 100 }: { actual?: number; target?: number; min?: number; max?: number }) => {
@@ -72,7 +72,11 @@ const LinearGaugeWithTarget2 = ({ actual = 95.1 , target = 90, min = 40, max = 1
                         </Bar>
                     </BarChart>
                 </ChartContainer>
+
             </CardContent>
+            <CardFooter>
+              
+            </CardFooter>
         </Card>
     )
 }

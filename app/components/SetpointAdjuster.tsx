@@ -24,12 +24,12 @@ export function SetpointAdjuster({
   className,
   unit,
 }: SetpointAdjusterProps) {
-  const [localValue, setLocalValue] = useState(value.toString());
+  const [localValue, setLocalValue] = useState(value.toFixed(1));
 
   const adjustValue = (adjustment: number) => {
     const newValue = Math.min(max, Math.max(min, value + adjustment));
     onChange(newValue);
-    setLocalValue(newValue.toString());
+    setLocalValue(newValue.toFixed(1));
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +64,7 @@ export function SetpointAdjuster({
           value={localValue}
           onChange={handleInputChange}
           onBlur={handleBlur}
-          className="w-28 text-center pr-8 h-12"
+          className="w-28 text-center pr-8 h-9"
         />
         {unit && (
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
