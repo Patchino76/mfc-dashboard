@@ -4,7 +4,7 @@ import numpy as np
 from  tags_definition import sql_tags
 
 class PulseData:
-    def __init__(self, data):
+    def __init__(self):
         server = '10.20.2.10' 
         database = 'pulse' 
         username = 'Pulse_RO' 

@@ -14,7 +14,7 @@ app.add_middleware(
 
 trend = SimulateTrend()
 
-@app.get("/")
+@app.get("/test")
 def read_root():
     return {"message": "Hello, World!"}
 
