@@ -2,17 +2,20 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 export interface qryProps {
-  tags: string[];
+  tags: string;
   num_records: number;
 }
 
 export function usePulseTrend(queryData: qryProps) {
+
   return useQuery<number[][]>({
     queryKey: ["simpletrend"],
     queryFn: async () => {
-        const { tags, num_records } = queryData;
+        // const { tags, num_records } = queryData;
+        const tags = ['RECOVERY_LINE1_CU_LONG' , 'RECOVERY_LINE2_CU_LONG'];
+        const num_records = 5;
         const response = await axios.get<number[][]>('http://localhost:8000/pulse', {
-            params: { tags, num_records },
+            params: { tags: tags.join(','), num_records },
           });
         return response.data;
     },

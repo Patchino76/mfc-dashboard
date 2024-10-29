@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Query
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict
 from sim_trend import SimulateTrend
 from pulse_data_funcs import PulseData
+from pydantic import BaseModel, Field   
 
 app = FastAPI()
 app.add_middleware(
@@ -15,6 +16,11 @@ app.add_middleware(
 
 trend_sim = SimulateTrend()
 trend = PulseData()
+
+class QueryParams(BaseModel):
+    tags: str = Field(..., description="The tags to filter data by")
+    num_records: int = Field(10, description="Number of records to return")
+
 
 @app.get("/")
 def read_root():
@@ -32,12 +38,15 @@ def get_trend_sp_pv():
 
 #pulse sql data
 @app.get("/pulse", response_model=List[List[float]])
-def get_data(tags: List[str] = Query(..., description="The tags to filter data by"), num_records: int = Query(10, description="Number of records to return")):
-    print(tags, num_records)
-    tags_data = trend.get_data_by_tags(tags, num_records)
-    tags_data = tags_data.tolist()
-    
-    return tags_data
+def get_data(params: QueryParams = Depends()):
+    try:
+        tags_list = params.tags.split(',')
+        tags_data = trend.get_data_by_tags(tags_list, params.num_records)
+        tags_data = tags_data.tolist()
+        return tags_data
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
 if __name__ == "__main__":
