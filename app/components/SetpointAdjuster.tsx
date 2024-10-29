@@ -48,7 +48,7 @@ export function SetpointAdjuster({
   };
 
   return (
-    <div className={cn("flex items-stretch gap-2 w-fit h-12", className)}>
+    <div className={cn("flex gap-2 w-fit h-12 items-center", className)}>
       <Button
         variant="outline"
         size="icon"
@@ -58,7 +58,7 @@ export function SetpointAdjuster({
         <ChevronDown className="h-6 w-6" />
       </Button>
 
-      <div className="relative flex-shrink-0">
+      <div className="relative  flex items-center justify-center">
         <Input
           type="text"
           value={localValue}
