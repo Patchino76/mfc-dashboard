@@ -1,5 +1,7 @@
 {
-    "python.defaultInterpreterPath": "c:\\venv\\crewai312\\scripts\\python.exe",
-    "files.autoSave": "onWindowChange",
-    "files.autoSaveWhenNoErrors": true
+  "python.defaultInterpreterPath": "c:\\venv\\crewai312\\scripts\\python.exe",
+  "files.autoSave": "onWindowChange",
+  "files.autoSaveWhenNoErrors": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
 }

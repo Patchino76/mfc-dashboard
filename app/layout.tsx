@@ -32,12 +32,14 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        style={{ height: "100vh", width: "100vw" }}
       >
         <QueryClientProvider>
           <Theme accentColor="violet">
-            {/* <Container maxWidth="100vw" align={"center"} >{children}</Container> */}
             <Navbar />
-            {children}
+            <Container maxWidth="100vw" align={"center"}>
+              {children}
+            </Container>
           </Theme>
         </QueryClientProvider>
       </body>
