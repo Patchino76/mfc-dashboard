@@ -1,8 +1,10 @@
 from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Any, List, Dict
 from sim_trend import SimulateTrend
 from pulse_data_funcs import PulseData
+from pydantic import BaseModel, Field   
 from pydantic import BaseModel, Field   
 
 app = FastAPI()
