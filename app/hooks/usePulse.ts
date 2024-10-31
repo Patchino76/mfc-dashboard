@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 export interface qryProps {
-  tags: string;
+  tags: string[];
   num_records: number;
 }
 
