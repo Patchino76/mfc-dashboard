@@ -43,7 +43,12 @@ const LinearGaugeWithTargetAndSpAdjuster = ({
   const [spValue, setSpValue] = React.useState(target);
 
   return (
-    <Card className="w-full ">
+    <Card
+      style={{
+        width: "100%",
+        height: "100%",
+      }}
+    >
       <CardHeader>
         <CardTitle className="flex justify-center">{title}</CardTitle>
         <CardDescription className="flex justify-center">

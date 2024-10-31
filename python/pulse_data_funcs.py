@@ -42,41 +42,6 @@ class PulseData:
         
         return np.array(values)
     
- 
-    def get_data_with_timestamps_(self, tag_names: list, counts: int = 10) -> List[dict]:
-        tag_ids = [next((tag["id"] for tag in sql_tags if tag["name"] == name), None) for name in tag_names]
-        if any(id is None for id in tag_ids):
-            raise ValueError("One or more tags not found.")
-        
-        data = []
-        for tag_id in tag_ids:
-            query_str = f"SELECT TOP {counts} IndexTime, LoggerTagID, Value FROM LoggerValues WHERE LoggerTagID = {tag_id} ORDER BY IndexTime DESC"
-            self.cursor.execute(query_str)
-            rows = self.cursor.fetchall()
-            rows = [list(row) for row in rows]
-            print("Fetched rows:", rows)
-
-
-            # Create a pandas DataFrame from the query result
-            df = pd.DataFrame(rows, columns=['IndexTime', 'LoggerTagID', 'Value'])
-            df = df[df['Value'] >= 1]
-            
-            df['Timestamp'] = pd.to_datetime(df['IndexTime'])
-            df.set_index('Timestamp', inplace=True)
-            df_resampled = df.resample('1H').mean().interpolate(method='linear')
-            df_resampled.reset_index(inplace=True)
-           
-            print(df.head(5))
-            
-            # Convert the DataFrame back to a list of dictionaries
-            data.extend(df.apply(lambda row: {
-                "tag_id": row['LoggerTagID'],
-                "tagname": next((tag["name"] for tag in sql_tags if tag["id"] == row['LoggerTagID']), None),
-                "timestamp": row['IndexTime'].strftime("%Y-%m-%d %H:%M"),
-                "value": float(row['Value'])
-            }, axis=1).tolist())
-
-        return data
     
     def get_data_with_timestamps(self, tag_names: list, counts: int = 10) -> List[dict]:
         tag_ids = [next((tag["id"] for tag in sql_tags if tag["name"] == name), None) for name in tag_names]
@@ -92,7 +57,7 @@ class PulseData:
 
             # Create a pandas DataFrame from the query result
             df = pd.DataFrame(rows, columns=['IndexTime', 'LoggerTagID', 'Value'])
-            df = df[df['Value'] >= 1]
+            df = df[df['Value'] > 0]
             df['Timestamp'] = pd.to_datetime(df['IndexTime'])
             
             df.set_index('Timestamp', inplace=True)
@@ -110,7 +75,8 @@ class PulseData:
                     'Tagname': 'tagname'
                 })
             df_resampled['timestamp'] = df_resampled['timestamp'].dt.strftime("%Y-%m-%d %H:%M")
-            print(df_resampled.head(5))
+
+            # print(df_resampled.head(5))
 
             data.extend(df_resampled.to_dict(orient='records'))
 

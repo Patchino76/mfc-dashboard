@@ -36,8 +36,9 @@ export default function RootLayout({
       >
         <QueryClientProvider>
           <Theme accentColor="violet">
-            <Navbar />
-            <Container maxWidth="100vw" align={"center"}>
+            <Container maxWidth="95vw" maxHeight={"95vh"} align={"center"}>
+              <Navbar />
+
               {children}
             </Container>
           </Theme>

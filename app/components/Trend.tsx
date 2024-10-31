@@ -8,30 +8,36 @@ const Trend = ({ data }: { data: ChartData }) => {
     return <div>No data available</div>;
   }
   const options = {
-    title: "тренд концентрат",
+    // title: "тренд концентрат",
     hAxis: {
-      title: "Дата",
+      // title: "Дата",
       titleTextStyle: { color: "#333" },
       format: "MMM dd, yyyy",
-      gridlines: { count: 3 },
+      gridlines: { count: 10 },
       ticks: data
         .map((point, index) => (index % 10 === 0 ? new Date(point[0]) : null)) // Increase the interval to show every 10th timestamp
         .filter((tick) => tick !== null),
     },
-    vAxis: { minValue: 80, maxValue: 100 },
-    chartArea: { width: "90%", height: "60%" },
+    vAxis: {
+      title: "%",
+      minValue: 85,
+      maxValue: 95,
+    },
+    chartArea: { width: "85%", height: "60%" },
     curveType: "function",
-    colors: ["blue"],
+    // colors: ["blue"],
     legend: { position: "none" }, // Hide the legend
+    series: [{ color: "blue" }],
+    lineWidth: 2,
     intervals: { style: "area" },
-    gridlines: { color: "#ccc", count: -1 },
+    gridlines: { color: "red", count: -1 },
   };
 
   return (
     <Chart
       chartType="LineChart"
-      width="100%"
-      height="100%"
+      // width="100%"
+      // height="100%"
       data={data}
       options={options}
       formatters={[
