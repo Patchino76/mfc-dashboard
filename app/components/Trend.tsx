@@ -12,43 +12,42 @@ const Trend = ({ data }: { data: ChartData }) => {
     hAxis: {
       // title: "Дата",
       titleTextStyle: { color: "#333" },
-      format: "MMM dd, yyyy",
-      gridlines: { count: 10 },
-      ticks: data
-        .map((point, index) => (index % 10 === 0 ? new Date(point[0]) : null)) // Increase the interval to show every 10th timestamp
-        .filter((tick) => tick !== null),
+      // format: "MMM dd, yyyy",
+      gridlines: { count: 5, color: "#ccc" },
+      // ticks: 5,
     },
     vAxis: {
       title: "%",
       minValue: 85,
       maxValue: 95,
+      gridlines: { color: "#ccc", count: 5 },
     },
-    chartArea: { width: "85%", height: "60%" },
+    chartArea: { width: "85%", height: "70%", top: "5%" },
     curveType: "function",
     // colors: ["blue"],
     legend: { position: "none" }, // Hide the legend
     series: [{ color: "blue" }],
     lineWidth: 2,
     intervals: { style: "area" },
-    gridlines: { color: "red", count: -1 },
+    // gridlines: { color: "red", count: -1 },
   };
 
   return (
     <Chart
       chartType="LineChart"
-      // width="100%"
-      // height="100%"
+      width="100%"
+      height="100%"
       data={data}
       options={options}
-      formatters={[
-        {
-          column: 0,
-          type: "DateFormat",
-          options: {
-            timeZone: 0,
-          },
-        },
-      ]}
+      // formatters={[
+      //   {
+      //     column: 0,
+      //     type: "DateFormat",
+      //     options: {
+      //       timeZone: 0,
+      //     },
+      //   },
+      // ]}
     />
   );
 };
