@@ -76,7 +76,8 @@ class PulseData:
                 })
             df_resampled['timestamp'] = df_resampled['timestamp'].dt.strftime("%Y-%m-%d %H:%M")
 
-            # print(df_resampled.head(5))
+            
+            print(df_resampled.describe())
 
             data.extend(df_resampled.to_dict(orient='records'))
 

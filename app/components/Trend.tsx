@@ -39,15 +39,6 @@ const Trend = ({ data }: { data: ChartData }) => {
       height="100%"
       data={data}
       options={options}
-      // formatters={[
-      //   {
-      //     column: 0,
-      //     type: "DateFormat",
-      //     options: {
-      //       timeZone: 0,
-      //     },
-      //   },
-      // ]}
     />
   );
 };
