@@ -67,7 +67,7 @@ class PulseData:
         for item in data: #setting the dt index
             item['df']['timestamp'] = pd.to_datetime(item['df']['timestamp'])
             item['df'].set_index('timestamp', inplace=True)
-            
+
         for item in data:
             item['df'] = item['df'].loc[end_date:start_date].resample('1h').mean()
 
@@ -78,12 +78,8 @@ class PulseData:
         for item in data:
             item['df'] = item['df'].loc[common_indices]
 
-
-        print(data)
         result = pd.concat([item['df'].rename(columns={'value': item['tagname']}) for item in data], axis=1)
-        # result = pd.concat([item['df']], axis=1)
         # result = result.ffill()
-        # print(result.head())
         return result
             
 
@@ -139,11 +135,11 @@ class PulseData:
 
     def get_data_with_timestamps(self, tag_names: list, counts: int = 10) -> List[dict]:
         df = self.make_df_from_tags_and_dates(tag_names, start=datetime.datetime(2024, 10, 28, 6, 0), end=datetime.datetime.now())
-        df['timestamp'] = df['timestamp'].dt.strftime("%Y-%m-%d %H:%M")
+        # df['timestamp'] = df['timestamp'].dt.strftime("%Y-%m-%d %H:%M")
         rez = df.to_dict(orient='records')
         print(df.head())
         # print(rez)
-        return rez
+        return [{}]
 
 
 
@@ -160,11 +156,8 @@ class PulseData:
         if self.df is None:
             print("No data available")
             return
-        
-
         fig, ax = plt.subplots()
-
-        
+     
         values1 = self.df[self.df['tagname'] == 'CUFLOTAS2-S7-400PV_CU_LINE_1']['value']
         values2 = self.df[self.df['tagname'] == 'CUFLOTAS2-S7-400PV_FE_LINE1']['value']
         # print(values1.shape)
