@@ -65,6 +65,10 @@ def get_data(params: QueryParams = Depends()):
         print(f"Error occurred: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+@app.get("/scatter", response_model=str)
+def get_scatter():
+    data = trend.get_scatter()
+    return data
 
 if __name__ == "__main__":
     import uvicorn

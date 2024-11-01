@@ -5,6 +5,7 @@ import LinearGaugeWithTargetAndSpAdjuster from "../components/LinearGaugeWithTar
 import { useEffect, useState } from "react";
 import Trend from "../components/Trend";
 import RadialGoogleGauge from "../components/RadialGoogleGauge";
+import HtmlPlot from "../components/HtmlPlot";
 
 export type ChartRow = [string, number];
 export type ChartData = [string[], ...ChartRow[]];
@@ -36,12 +37,12 @@ export default function TargetsPage() {
     ]);
     const chart: ChartData = [header, ...chartData];
     setTrend(chart);
-    console.log(chart);
+    // console.log(chart);
   };
 
   useEffect(() => {
     if (trendData) {
-      console.log(trendData);
+      // console.log(trendData);
       //set the trend
       const values = trendData.filter((item) => item.tagname === tags[0]); //filter data by tagname for the trend
       setPV(values[0].value); //set the pv
@@ -158,6 +159,9 @@ export default function TargetsPage() {
             )}
           </Flex>
         </Card>
+      </Box>
+      <Box gridColumn={"3"} gridRow={"2"}>
+        <HtmlPlot />
       </Box>
     </Grid>
   );

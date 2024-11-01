@@ -3,7 +3,7 @@ import { Chart } from "react-google-charts";
 import { ChartData } from "../targets/page";
 
 const Trend = ({ data }: { data: ChartData }) => {
-  console.log(data);
+  // console.log(data);
   if (!data || data.length === 0) {
     return <div>No data available</div>;
   }
