@@ -26,9 +26,6 @@ const CardRadialGogoogleGauge = () => {
       style={{
         width: "100%",
         height: "100%",
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-        padding: "16px",
       }}
     >
       <Flex direction="column" gap="1" align={"center"}>

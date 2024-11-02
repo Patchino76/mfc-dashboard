@@ -9,34 +9,7 @@ import CardRadialGogoogleGauge from "../components/CardRadialGogoogleGauge";
 
 export default function DashboardPage() {
   return (
-    // <Flex gap="3" direction={"row"} mt={"3"}>
-    //   <Flex gap="3" align={"center"} direction={"column"}>
-    //     <Box>
-    //       <CardGauge />
-    //     </Box>
-    //     <Box>
-    //       <CardDiffGauge />
-    //     </Box>
-    //   </Flex>
 
-    // <Flex gap="3" align={"center"} direction={"column"}>
-    //   <Box>
-    //     <CardGauge />
-    //   </Box>
-    //   <Box>
-    //     <CardTableChart />
-    //   </Box>
-    // </Flex>
-    // <Flex gap="3" align={"center"} direction={"column"}>
-    // <Box>
-    //   <CardAreaChart />
-    // </Box>
-    // <Box>
-    //   <CardDiffChart />
-    // </Box>
-    // </Flex>
-    // </Flex>
-    // <Flex gap="3" align={"center"} direction={"column"}>
       <Grid columns="6"  m={"3"} gap={"2"} justify={"center"}>
         <Box>
           <CardGauge />

@@ -1,4 +1,11 @@
 {
   "python.defaultInterpreterPath": "c:\\venv\\crewai312\\scripts\\python.exe",
+<<<<<<< HEAD
   "notebook.defaultFormatter": "esbenp.prettier-vscode"
+=======
+  "files.autoSave": "onWindowChange",
+  "files.autoSaveWhenNoErrors": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
+>>>>>>> 9ec0c110c0036711d4ee354932ba914a92bba2c9
 }
