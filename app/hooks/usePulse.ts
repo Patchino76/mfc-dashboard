@@ -13,6 +13,11 @@ export interface responseProps {
   value: number;
 }
 
+interface DataPoint {
+  [key: string]: number;
+}
+export type DataRecord = Record<string, DataPoint>;
+
 export function usePulseTrend(queryData: qryProps) {
   return useQuery<number[][]>({
     queryKey: ["simpletrend"],
@@ -35,12 +40,12 @@ export function usePulseTrend(queryData: qryProps) {
 }
 
 export function usePulseTrendwithTS(queryData: qryProps) {
-  return useQuery<responseProps[]>({
+  return useQuery<DataRecord>({
     queryKey: ["trend-ts"],
     queryFn: async () => {
       const { tags, num_records } = queryData;
-      const response = await axios.get<responseProps[]>(
-        "http://localhost:8000/pulse-ts",
+      const response = await axios.get<DataRecord>(
+        "http://localhost:8000/pulse-ts2",
         {
           params: { tags: tags.join(","), num_records },
         }

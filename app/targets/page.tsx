@@ -1,6 +1,10 @@
 "use client";
 import { Card, Flex, Box, Text, Grid } from "@radix-ui/themes";
-import { responseProps, usePulseTrendwithTS } from "../hooks/usePulse";
+import {
+  DataRecord,
+  responseProps,
+  usePulseTrendwithTS,
+} from "../hooks/usePulse";
 import LinearGaugeWithTargetAndSpAdjuster from "../components/LinearGaugeWithTargetAndSpAdjuster";
 import { useEffect, useState } from "react";
 import Trend from "../components/Trend";
@@ -9,6 +13,11 @@ import HtmlPlot from "../components/HtmlPlot";
 
 export type ChartRow = [string, number];
 export type ChartData = [string[], ...ChartRow[]];
+
+interface DataPoint {
+  timestamp: string;
+  [key: string]: number | string;
+}
 
 export default function TargetsPage() {
   const tags = [
@@ -42,11 +51,26 @@ export default function TargetsPage() {
 
   useEffect(() => {
     if (trendData) {
-      // console.log(trendData);
+      const processData = (data: DataRecord) => {
+        return Object.entries(data).map(([timestamp, values]) => ({
+          timestamp,
+          ...values,
+        }));
+      };
+
+      const processedData: DataPoint[] = processData(trendData);
+      const keys = tags;
+
+      const filteredData = processedData.map((record) => [
+        record.timestamp,
+        ...keys.map((key) => record[key] as number), // Extract values for each key
+      ]);
+
+      console.log(filteredData);
       //set the trend
-      const values = trendData.filter((item) => item.tagname === tags[0]); //filter data by tagname for the trend
-      setPV(values[0].value); //set the pv
-      makeGoogleTrend(values);
+      const values = processedData.filter((item) => item.tagname === tags[0]); //filter data by tagname for the trend
+      setPV(filteredData[0][1] as number); //set the pv
+      makeGoogleTrend(filteredData);
 
       //set the gauges
       const val1 = trendData.filter((item) => item.tagname === tags[1])[0]

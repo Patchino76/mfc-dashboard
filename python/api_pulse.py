@@ -56,7 +56,7 @@ def get_data(params: QueryParams = Depends()):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @app.get("/pulse-ts", response_model=List[TagData])
-def get_data(params: QueryParams = Depends()):
+def get_data_by_tags_and_ts(params: QueryParams = Depends()):
     try:
         tags_list = params.tags.split(',')
         tags_data = trend.get_data_with_timestamps(tags_list, params.num_records)
