@@ -1,9 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export interface qryProps {
+export interface qryProps1 {
   tags: string[];
   num_records: number;
+}
+export interface qryProps2 {
+  tags: string[];
+  start: string;
+  end: string;
 }
 
 export interface responseProps {
@@ -13,7 +18,19 @@ export interface responseProps {
   value: number;
 }
 
-export function usePulseTrend(queryData: qryProps) {
+interface ApiDataPoint {
+  timestamp: string;
+  data: {
+    [key: string]: number;
+  };
+}
+// export type DataRecord = Record<string, DataPoint>;
+// export interface TsWithTagVals {
+//   timestamp: string;
+//   tagvals: DataPoint[];
+// }
+
+export function usePulseTrend(queryData: qryProps1) {
   return useQuery<number[][]>({
     queryKey: ["simpletrend"],
     queryFn: async () => {
@@ -34,21 +51,21 @@ export function usePulseTrend(queryData: qryProps) {
   });
 }
 
-export function usePulseTrendwithTS(queryData: qryProps) {
-  return useQuery<responseProps[]>({
+export function usePulseTrendwithTS(queryData: qryProps2) {
+  return useQuery<ApiDataPoint[]>({
     queryKey: ["trend-ts"],
     queryFn: async () => {
-      const { tags, num_records } = queryData;
-      const response = await axios.get<responseProps[]>(
+      const { tags, start, end } = queryData;
+      const response = await axios.get<ApiDataPoint[]>(
         "http://localhost:8000/pulse-ts",
         {
-          params: { tags: tags.join(","), num_records },
+          params: { tags: tags.join(","), start, end },
         }
       );
       return response.data;
     },
     staleTime: 0,
-    refetchInterval: 5000,
+    refetchInterval: 10000,
     networkMode: "always",
   });
 }

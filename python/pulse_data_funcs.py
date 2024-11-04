@@ -8,6 +8,7 @@ from  tags_definition import sql_tags
 import matplotlib.pyplot as plt
 import seaborn as sns
 import mpld3
+from datetime import datetime as dt
 
 class PulseData:
     df = pd.DataFrame()
@@ -47,29 +48,29 @@ class PulseData:
         
         return np.array(values)
     
-    def make_df_from_tags_and_dates(self, tag_names: list, start: datetime.datetime, end: datetime.datetime) -> pd.DataFrame:
-        start_date = start
-        end_date = end
+    def generate_df_dict(self, tag_names: list, start: dt, end: dt) -> dict:
+        start = start.replace(tzinfo=None).strftime("%Y-%m-%d %H:%M:%S")
+        end = end.replace(tzinfo=None).strftime("%Y-%m-%d %H:%M:%S")
 
-        tag_names = ["RECOVERY_LINE1_CU_LONG",     "CUFLOTAS2-S7-400PV_CU_LINE_1",     "CUFLOTAS2-S7-400PV_FE_LINE1"]
         tag_ids = [next((tag["id"] for tag in sql_tags if tag["name"] == name), None) for name in tag_names]
 
         data = []
         for tag_id in tag_ids:
-            query_str = f"SELECT TOP {300} IndexTime, Value FROM LoggerValues WHERE LoggerTagID = {tag_id} ORDER BY IndexTime DESC"
+            query_str = f"SELECT  IndexTime, Value FROM LoggerValues WHERE LoggerTagID = {tag_id} \
+                AND IndexTime BETWEEN '{start}' AND '{end}' ORDER BY IndexTime DESC"
             self.cursor.execute(query_str)
             rows = self.cursor.fetchall()
             rows = [list(row) for row in rows]
 
-        tag_name = next((tag["name"] for tag in sql_tags if tag["id"] == tag_id), None)
-        data.append({"tagname": tag_name, "df": pd.DataFrame(rows, columns=['timestamp', 'value'])})
+            tag_name = next((tag["name"] for tag in sql_tags if tag["id"] == tag_id), None)
+            data.append({"tagname": tag_name, "df": pd.DataFrame(rows, columns=['timestamp', 'value'])})
 
         for item in data: #setting the dt index
             item['df']['timestamp'] = pd.to_datetime(item['df']['timestamp'])
             item['df'].set_index('timestamp', inplace=True)
 
         for item in data:
-            item['df'] = item['df'].loc[end_date:start_date].resample('1h').mean()
+            item['df'] = item['df'].resample('1h').mean()
 
         # Find the common indices in the dataframes and trim to the common ones
         common_indices = data[0]['df'].index
@@ -78,58 +79,13 @@ class PulseData:
         for item in data:
             item['df'] = item['df'].loc[common_indices]
 
-        result = pd.concat([item['df'].rename(columns={'value': item['tagname']}) for item in data], axis=1)
-        # result = result.ffill()
-        return result
+        df = pd.concat([item['df'].rename(columns={'value': item['tagname']}) for item in data], axis=1)
+        df = df.ffill().infer_objects(copy=False)
+        df_to_dict = {index.strftime("%Y-%m-%d %H:%M"): row.to_dict() for index, row in df.iterrows()}
+
+        print(df.head(2))
+        return df_to_dict
             
-
-   
-    # def get_data_with_timestamps_(self, tag_names: list, counts: int = 10) -> List[dict]:
-    #     tag_ids = [next((tag["id"] for tag in sql_tags if tag["name"] == name), None) for name in tag_names]
-    #     if any(id is None for id in tag_ids):
-    #         raise ValueError("One or more tags not found.")
-        
-    #     data = []
-    #     # self.pd = pd.DataFrame()
-    #     for tag_id in tag_ids:
-    #         query_str = f"SELECT TOP {counts} IndexTime, LoggerTagID, Value FROM LoggerValues WHERE LoggerTagID = {tag_id} ORDER BY IndexTime DESC"
-    #         self.cursor.execute(query_str)
-    #         rows = self.cursor.fetchall()
-    #         rows = [list(row) for row in rows]
-
-    #         # Create a pandas DataFrame from the query result
-    #         df = pd.DataFrame(rows, columns=['IndexTime', 'LoggerTagID', 'Value'])
-    #         df = df[df['Value'] > 0]
-    #         df['Timestamp'] = pd.to_datetime(df['IndexTime'])
-            
-    #         df.set_index('Timestamp', inplace=True)
-    #         df['Value'] = pd.to_numeric(df['Value'])
-            
-    #         df_resampled = df.resample('1h').mean().interpolate(method='linear')
-    #         df_resampled['Tagname'] = df_resampled['LoggerTagID'].apply(lambda x: next((tag["name"] for tag in sql_tags if tag["id"] == x), None))
-    #         df_resampled.reset_index(inplace=True)
-    #         df_resampled.drop('IndexTime', axis=1, inplace=True)
-
-    #         df_resampled = df_resampled.rename(columns={
-    #                 'Timestamp': 'timestamp',
-    #                 'LoggerTagID': 'tag_id',
-    #                 'Value': 'value',
-    #                 'Tagname': 'tagname'
-    #             })
-    #         df_resampled['timestamp'] = df_resampled['timestamp'].dt.strftime("%Y-%m-%d %H:%M")
-
-    #         print(self.df.shape)
-    #         self.df = pd.concat([self.df, df_resampled], ignore_index=True)
-            
-            
-
-    #         data.extend(df_resampled.to_dict(orient='records'))
-    #     print(self.df)
-    #     print(self.df.info())
-    #     return data
-    
-
-
 
 
 
