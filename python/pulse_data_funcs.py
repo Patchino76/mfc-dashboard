@@ -87,10 +87,7 @@ class PulseData:
         return df_to_dict
             
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 4aae00da0b7487d44ccb24931b9ea3d586640dde
 
     def get_data_with_timestamps(self, tag_names: list, counts: int = 10) -> List[dict]:
         df = self.make_df_from_tags_and_dates_fake(tag_names, start=datetime.datetime(2024, 10, 28, 6, 0), end=datetime.datetime.now())

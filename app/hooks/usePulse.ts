@@ -24,8 +24,6 @@ interface DataPoint {
 }
 export type DataRecord = Record<string, DataPoint>;
 
-export function usePulseTrend(queryData: qryProps) {
-=======
 interface ApiDataPoint {
   timestamp: string;
   data: {
@@ -39,7 +37,6 @@ interface ApiDataPoint {
 // }
 
 export function usePulseTrend(queryData: qryProps1) {
->>>>>>> 4aae00da0b7487d44ccb24931b9ea3d586640dde
   return useQuery<number[][]>({
     queryKey: ["simpletrend"],
     queryFn: async () => {
@@ -60,15 +57,6 @@ export function usePulseTrend(queryData: qryProps1) {
   });
 }
 
-<<<<<<< HEAD
-export function usePulseTrendwithTS(queryData: qryProps) {
-  return useQuery<DataRecord>({
-    queryKey: ["trend-ts"],
-    queryFn: async () => {
-      const { tags, num_records } = queryData;
-      const response = await axios.get<DataRecord>(
-        "http://localhost:8000/pulse-ts2",
-=======
 export function usePulseTrendwithTS(queryData: qryProps2) {
   return useQuery<ApiDataPoint[]>({
     queryKey: ["trend-ts"],

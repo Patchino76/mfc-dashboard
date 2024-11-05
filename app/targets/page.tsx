@@ -18,11 +18,6 @@ interface DataPoint {
   data: { [key: string]: number };
 }
 
-interface DataPoint {
-  timestamp: string;
-  [key: string]: number | string;
-}
-
 export default function TargetsPage() {
   const tags = [
     "RECOVERY_LINE1_CU_LONG",
@@ -66,31 +61,7 @@ export default function TargetsPage() {
   };
 
   useEffect(() => {
-<<<<<<< HEAD
-    if (trendData) {
-      const processData = (data: DataRecord) => {
-        return Object.entries(data).map(([timestamp, values]) => ({
-          timestamp,
-          ...values,
-        }));
-      };
-
-      const processedData: DataPoint[] = processData(trendData);
-      const keys = tags;
-
-      const filteredData = processedData.map((record) => [
-        record.timestamp,
-        ...keys.map((key) => record[key] as number), // Extract values for each key
-      ]);
-
-      console.log(filteredData);
-      //set the trend
-      const values = processedData.filter((item) => item.tagname === tags[0]); //filter data by tagname for the trend
-      setPV(filteredData[0][1] as number); //set the pv
-      makeGoogleTrend(filteredData);
-=======
     if (!rawData) return;
->>>>>>> 4aae00da0b7487d44ccb24931b9ea3d586640dde
 
     // const tags = ["RECOVERY_LINE1_CU_LONG", "CUFLOTAS2-S7-400PV_CU_LINE_1"];
     const rawArray = flattenData(rawData, tags);

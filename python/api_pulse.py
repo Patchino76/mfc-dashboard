@@ -63,16 +63,6 @@ def get_data(params: QueryParams = Depends()):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @app.get("/pulse-ts", response_model=List[TagData])
-<<<<<<< HEAD
-def get_data_by_tags_and_ts(params: QueryParams = Depends()):
-    try:
-        tags_list = params.tags.split(',')
-        tags_data = trend.get_data_with_timestamps(tags_list, params.num_records)
-        return tags_data
-    except Exception as e:
-        print(f"Error occurred: {e}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
-=======
 def get_data(params: QueryParams = Depends()):
 
     tags_list = params.tags.split(',')
@@ -83,7 +73,6 @@ def get_data(params: QueryParams = Depends()):
     print(response_list)
     return response_list
 
->>>>>>> 4aae00da0b7487d44ccb24931b9ea3d586640dde
 
 @app.get("/scatter", response_model=str)
 def get_scatter():
