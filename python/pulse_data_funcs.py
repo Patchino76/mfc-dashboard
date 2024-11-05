@@ -8,6 +8,7 @@ from  tags_definition import sql_tags
 import matplotlib.pyplot as plt
 import seaborn as sns
 import mpld3
+from datetime import datetime as dt
 
 class PulseData:
     df = pd.DataFrame()
@@ -47,29 +48,29 @@ class PulseData:
         
         return np.array(values)
     
-    def make_df_from_tags_and_dates(self, tag_names: list, start: datetime.datetime, end: datetime.datetime) -> pd.DataFrame:
-        start_date = start
-        end_date = end
+    def generate_df_dict(self, tag_names: list, start: dt, end: dt) -> dict:
+        start = start.replace(tzinfo=None).strftime("%Y-%m-%d %H:%M:%S")
+        end = end.replace(tzinfo=None).strftime("%Y-%m-%d %H:%M:%S")
 
-        tag_names = ["RECOVERY_LINE1_CU_LONG",     "CUFLOTAS2-S7-400PV_CU_LINE_1",     "CUFLOTAS2-S7-400PV_FE_LINE1"]
         tag_ids = [next((tag["id"] for tag in sql_tags if tag["name"] == name), None) for name in tag_names]
 
         data = []
         for tag_id in tag_ids:
-            query_str = f"SELECT TOP {300} IndexTime, Value FROM LoggerValues WHERE LoggerTagID = {tag_id} ORDER BY IndexTime DESC"
+            query_str = f"SELECT  IndexTime, Value FROM LoggerValues WHERE LoggerTagID = {tag_id} \
+                AND IndexTime BETWEEN '{start}' AND '{end}' ORDER BY IndexTime DESC"
             self.cursor.execute(query_str)
             rows = self.cursor.fetchall()
             rows = [list(row) for row in rows]
 
-        tag_name = next((tag["name"] for tag in sql_tags if tag["id"] == tag_id), None)
-        data.append({"tagname": tag_name, "df": pd.DataFrame(rows, columns=['timestamp', 'value'])})
+            tag_name = next((tag["name"] for tag in sql_tags if tag["id"] == tag_id), None)
+            data.append({"tagname": tag_name, "df": pd.DataFrame(rows, columns=['timestamp', 'value'])})
 
         for item in data: #setting the dt index
             item['df']['timestamp'] = pd.to_datetime(item['df']['timestamp'])
             item['df'].set_index('timestamp', inplace=True)
 
         for item in data:
-            item['df'] = item['df'].loc[end_date:start_date].resample('1h').mean()
+            item['df'] = item['df'].resample('1h').mean()
 
         # Find the common indices in the dataframes and trim to the common ones
         common_indices = data[0]['df'].index
@@ -78,11 +79,18 @@ class PulseData:
         for item in data:
             item['df'] = item['df'].loc[common_indices]
 
-        result = pd.concat([item['df'].rename(columns={'value': item['tagname']}) for item in data], axis=1)
-        # result = result.ffill()
-        return result
+        df = pd.concat([item['df'].rename(columns={'value': item['tagname']}) for item in data], axis=1)
+        df = df.ffill().infer_objects(copy=False)
+        df_to_dict = {index.strftime("%Y-%m-%d %H:%M"): row.to_dict() for index, row in df.iterrows()}
+
+        print(df.head(2))
+        return df_to_dict
             
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4aae00da0b7487d44ccb24931b9ea3d586640dde
 
     def get_data_with_timestamps(self, tag_names: list, counts: int = 10) -> List[dict]:
         df = self.make_df_from_tags_and_dates_fake(tag_names, start=datetime.datetime(2024, 10, 28, 6, 0), end=datetime.datetime.now())

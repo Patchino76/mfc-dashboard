@@ -6,6 +6,8 @@ from sim_trend import SimulateTrend
 from pulse_data_funcs import PulseData
 from pydantic import BaseModel, Field   
 from pydantic import BaseModel, Field   
+from datetime import datetime as dt
+from datetime import  timezone as tz
 
 app = FastAPI()
 app.add_middleware(
@@ -21,13 +23,18 @@ trend = PulseData()
 
 class QueryParams(BaseModel):
     tags: str = Field(..., description="The tags to filter data by")
-    num_records: int = Field(10, description="Number of records to return")
+    # tags: List[str] = Field(..., description="The tags to filter data by")
+    start: dt = Field(None, description="The start date of the data range")
+    end: dt = Field(None, description="The end date of the data range")
 
+# class TagData(BaseModel):
+#     tag_id: int
+#     tagname: str
+#     timestamp: str
+#     value: float
 class TagData(BaseModel):
-    tag_id: int
-    tagname: str
     timestamp: str
-    value: float
+    data: Dict[str, float]
 
 @app.get("/")
 def read_root():
@@ -56,6 +63,7 @@ def get_data(params: QueryParams = Depends()):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @app.get("/pulse-ts", response_model=List[TagData])
+<<<<<<< HEAD
 def get_data_by_tags_and_ts(params: QueryParams = Depends()):
     try:
         tags_list = params.tags.split(',')
@@ -64,6 +72,18 @@ def get_data_by_tags_and_ts(params: QueryParams = Depends()):
     except Exception as e:
         print(f"Error occurred: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
+=======
+def get_data(params: QueryParams = Depends()):
+
+    tags_list = params.tags.split(',')
+    tags_data = trend.generate_df_dict(tags_list, params.start, params.end)
+
+    # convert to list of dicts
+    response_list = [{'timestamp': k, 'data': v} for k, v in tags_data.items()]
+    print(response_list)
+    return response_list
+
+>>>>>>> 4aae00da0b7487d44ccb24931b9ea3d586640dde
 
 @app.get("/scatter", response_model=str)
 def get_scatter():
