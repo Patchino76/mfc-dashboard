@@ -1,6 +1,6 @@
 "use client";
 import { Card, Flex, Box, Text, Grid } from "@radix-ui/themes";
-import { responseProps, usePulseTrendwithTS } from "../hooks/usePulse";
+import { useLastRecords, usePulseTrendwithTS } from "../hooks/usePulse";
 import LinearGaugeWithTargetAndSpAdjuster from "../components/LinearGaugeWithTargetAndSpAdjuster";
 import { use, useEffect, useState } from "react";
 import Trend from "../components/Trend";
@@ -24,6 +24,8 @@ export default function TargetsPage() {
   const end = new Date().toISOString();
 
   const { data: rawData } = usePulseTrendwithTS({ tags, start, end });
+  const { data: lastRecs } = useLastRecords(tags);
+
   const [pv, setPV] = useState<number>();
   const [googleChart, setGoogleChart] = useState<GoogleChartData>();
 
@@ -52,18 +54,23 @@ export default function TargetsPage() {
     const chart: GoogleChartData = [header, ...rawArray];
 
     const rez = rowCounts === 0 ? chart : chart.slice(0, 2);
-    console.log(rez);
+    // console.log(rez);
     return rez;
+  };
+
+  const makeGoogleGauge = (header: string[], tag: string, unit: string) => {
+    const gauge: GoogleChartData = [header, [unit, 22]];
+    return gauge;
   };
 
   useEffect(() => {
     if (!rawData) return;
 
-    // const tags = ["RECOVERY_LINE1_CU_LONG", "CUFLOTAS2-S7-400PV_CU_LINE_1"];
     const rawArray = flattenData(rawData, tags);
 
     // 1 element - vertical gauge
-    setPV(rawArray[0][1] as number);
+    console.log(lastRecs);
+    if (lastRecs) setPV(88);
     // 2 elemet - google trend chart
     const trend = makeGoogleTrend(
       ["Timestamp", "Value"],
@@ -71,22 +78,22 @@ export default function TargetsPage() {
       0
     );
     setGoogleChart(trend as GoogleChartData);
+
     // 3 elemet - google gauge 1
-    const gauge1 = makeGoogleTrend(
+    const gauge1 = makeGoogleGauge(
       ["Cu %", "Value"],
-      ["CUFLOTAS2-S7-400PV_CU_LINE_1"],
-      1
+      "CUFLOTAS2-S7-400PV_CU_LINE_1",
+      "%"
     );
     setCircGauge1(gauge1 as GoogleChartData);
+
     // 4 elemet - google gauge 2
-    const gauge2 = makeGoogleTrend(
+    const gauge2 = makeGoogleGauge(
       ["Fe %", "Value"],
-      ["CUFLOTAS2-S7-400PV_FE_LINE1"],
-      1
+      "CUFLOTAS2-S7-400PV_FE_LINE1",
+      "%"
     );
     setCircGauge2(gauge2 as GoogleChartData);
-
-    // );
   }, [rawData]);
 
   return (

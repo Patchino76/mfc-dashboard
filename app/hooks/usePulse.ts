@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export interface qryProps1 {
-  tags: string[];
-  num_records: number;
-}
+// export interface qryProps1 {
+//   tags: string[];
+//   num_records: number;
+// }
 export interface qryProps2 {
   tags: string[];
   start: string;
@@ -24,29 +24,22 @@ interface ApiDataPoint {
     [key: string]: number;
   };
 }
-// export type DataRecord = Record<string, DataPoint>;
-// export interface TsWithTagVals {
-//   timestamp: string;
-//   tagvals: DataPoint[];
-// }
 
-export function usePulseTrend(queryData: qryProps1) {
-  return useQuery<number[][]>({
+export function useLastRecords(tag_names: string[]) {
+  return useQuery<number[]>({
     queryKey: ["simpletrend"],
     queryFn: async () => {
-      const { tags, num_records } = queryData;
-      // const tags = ['RECOVERY_LINE1_CU_LONG' , 'RECOVERY_LINE2_CU_LONG'];
-      // const num_records = 5;
-      const response = await axios.get<number[][]>(
-        "http://localhost:8000/pulse",
+      const response = await axios.get<number[]>(
+        "http://localhost:8000/pulse-last",
         {
-          params: { tags: tags.join(","), num_records },
+          params: { tags: tag_names.join(",") },
         }
       );
+      console.log(response.data);
       return response.data;
     },
     staleTime: 0,
-    refetchInterval: 5000,
+    refetchInterval: 15000,
     networkMode: "always",
   });
 }
@@ -65,7 +58,7 @@ export function usePulseTrendwithTS(queryData: qryProps2) {
       return response.data;
     },
     staleTime: 0,
-    refetchInterval: 10000,
+    refetchInterval: 20000,
     networkMode: "always",
   });
 }

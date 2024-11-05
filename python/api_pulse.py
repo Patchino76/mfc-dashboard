@@ -1,5 +1,4 @@
 from fastapi import Depends, FastAPI, HTTPException, Query
-from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Any, List, Dict
 from sim_trend import SimulateTrend
@@ -7,14 +6,20 @@ from pulse_data_funcs import PulseData
 from pydantic import BaseModel, Field   
 from pydantic import BaseModel, Field   
 from datetime import datetime as dt
-from datetime import  timezone as tz
 
 app = FastAPI()
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"], 
+#     allow_headers=["*"],
+# )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
-    allow_methods=["*"], 
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
@@ -61,16 +66,22 @@ def get_data(params: QueryParams = Depends()):
     except Exception as e:
         print(f"Error occurred: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
+    
+@app.get("/pulse-last", response_model=List[float])
+def get_last(tags: str):
+    values = trend.get_last_records(tags)
+    return values
+
 
 @app.get("/pulse-ts", response_model=List[TagData])
 def get_data(params: QueryParams = Depends()):
 
     tags_list = params.tags.split(',')
-    tags_data = trend.generate_df_dict(tags_list, params.start, params.end)
+    tags_data = trend.get_data_by_tags(tags_list, params.start, params.end)
 
     # convert to list of dicts
     response_list = [{'timestamp': k, 'data': v} for k, v in tags_data.items()]
-    print(response_list)
+
     return response_list
 
 

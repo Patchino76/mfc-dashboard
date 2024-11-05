@@ -8,8 +8,8 @@ const HtmlPlot = () => {
   const { data: html } = useQuery({
     queryKey: ["html"],
     queryFn: async () =>
-      //   axios.get("http://localhost:8000/scatter").then((res) => res.data),
-      axios.get("/images/chart.html").then((res) => res.data),
+      axios.get("http://localhost:8000/scatter").then((res) => res.data),
+    // axios.get("/images/scatter.html").then((res) => res.data),
     staleTime: 5000,
     retry: 3,
     refetchInterval: 5000,
