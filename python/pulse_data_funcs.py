@@ -117,32 +117,7 @@ class PulseData:
         return df_to_dict
             
 
-<<<<<<< HEAD
-
-
-    def get_data_with_timestamps(self, tag_names: list, counts: int = 10) -> List[dict]:
-        df = self.make_df_from_tags_and_dates_fake(tag_names, start=datetime.datetime(2024, 10, 28, 6, 0), end=datetime.datetime.now())
-        
-        # df['timestamp'] = df['timestamp'].dt.strftime("%Y-%m-%d %H:%M")
-        rez = df.to_dict(orient='records')
-        print(df.head())
-        print(rez)
-        return [{}]
-
-
-
-
-
-
-
-
-
-
-
-
-=======
     # MPLD3 version 0.5.10 is working so install it from pip
->>>>>>> 5457743411788fd21ff2b72ed9a5e7e7f824030a
     def get_scatter(self, tag1: str="X", tag2: str="Y") -> str:
         if self.df.shape == (0,0):
             print("No data available")

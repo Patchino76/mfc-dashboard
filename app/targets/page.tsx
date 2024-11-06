@@ -1,14 +1,6 @@
 "use client";
 import { Card, Flex, Box, Text, Grid } from "@radix-ui/themes";
-<<<<<<< HEAD
-import {
-  DataRecord,
-  responseProps,
-  usePulseTrendwithTS,
-} from "../hooks/usePulse";
-=======
 import { useLastRecords, usePulseTrendwithTS } from "../hooks/usePulse";
->>>>>>> 5457743411788fd21ff2b72ed9a5e7e7f824030a
 import LinearGaugeWithTargetAndSpAdjuster from "../components/LinearGaugeWithTargetAndSpAdjuster";
 import { useEffect, useState } from "react";
 import Trend from "../components/Trend";
