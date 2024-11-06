@@ -2,10 +2,12 @@
 import { Card, Flex, Box, Text, Grid } from "@radix-ui/themes";
 import { useLastRecords, usePulseTrendwithTS } from "../hooks/usePulse";
 import LinearGaugeWithTargetAndSpAdjuster from "../components/LinearGaugeWithTargetAndSpAdjuster";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Trend from "../components/Trend";
 import RadialGoogleGauge from "../components/RadialGoogleGauge";
 import HtmlPlot from "../components/HtmlPlot";
+import LinearGaugeWithTargetAndSpAdjuster2 from "../components/LinearGaugeWithTargetAndSpAdjuster2";
+import MyMonthPicker from "../components/MyMonthPicker";
 
 export type ChartRow = (string | number)[];
 export type GoogleChartData = [string[], ...ChartRow[]];
@@ -23,8 +25,8 @@ export default function TargetsPage() {
   const start = new Date("2024-11-01 00:06:00").toISOString();
   const end = new Date().toISOString();
 
-  const { data: rawData } = usePulseTrendwithTS({ tags, start, end });
-  const { data: lastRecs } = useLastRecords(tags);
+  const { data: rawData } = usePulseTrendwithTS({ tags, start, end }, 30);
+  const { data: lastRecs } = useLastRecords(tags, 20);
 
   const [pv, setPV] = useState<number>();
   const [googleChart, setGoogleChart] = useState<GoogleChartData>();
@@ -33,6 +35,7 @@ export default function TargetsPage() {
   const [circGauge1, setCircGauge1] = useState<GoogleChartData>();
   const [circGauge2, setCircGauge2] = useState<GoogleChartData>();
 
+  // ARRAY HELPERS----------------------------------------------------------
   function flattenData(array: DataPoint[], tags: string[]): ChartRow[] {
     //make flat array [ts, val1, val2, ...]
     return array.map((item) => {
@@ -45,62 +48,69 @@ export default function TargetsPage() {
     });
   }
 
-  const makeGoogleTrend = (
-    header: string[],
-    tags: string[],
-    rowCounts: number = 1
-  ) => {
-    const rawArray = flattenData(rawData!, tags);
+  // FUCTIONS FOR MAKING TRENDS AND CHARTS---------------------------------
+  const makeGoogleTrend = (header: string[], tags: string[], sp?: number) => {
+    let rawArray = flattenData(rawData!, tags);
+    if (sp) rawArray = rawArray.map((row: ChartRow) => [...row, sp]);
     const chart: GoogleChartData = [header, ...rawArray];
-
-    const rez = rowCounts === 0 ? chart : chart.slice(0, 2);
-    // console.log(rez);
-    return rez;
+    return chart;
   };
 
-  const makeGoogleGauge = (header: string[], tag: string, unit: string) => {
-    const gauge: GoogleChartData = [header, [unit, 22]];
+  const makeGoogleGauge = (header: string[], value: number, unit: string) => {
+    const gauge: GoogleChartData = [header, [unit, value]];
     return gauge;
   };
 
+  // USE EFFFECTS----------------------------------------------------------
   useEffect(() => {
     if (!rawData) return;
 
-    const rawArray = flattenData(rawData, tags);
-
-    // 1 element - vertical gauge
-    console.log(lastRecs);
-    if (lastRecs) setPV(88);
     // 2 elemet - google trend chart
     const trend = makeGoogleTrend(
-      ["Timestamp", "Value"],
+      ["Timestamp", "Value", "SP"],
       ["RECOVERY_LINE1_CU_LONG"],
-      0
+      90
     );
     setGoogleChart(trend as GoogleChartData);
-
-    // 3 elemet - google gauge 1
-    const gauge1 = makeGoogleGauge(
-      ["Cu %", "Value"],
-      "CUFLOTAS2-S7-400PV_CU_LINE_1",
-      "%"
-    );
-    setCircGauge1(gauge1 as GoogleChartData);
-
-    // 4 elemet - google gauge 2
-    const gauge2 = makeGoogleGauge(
-      ["Fe %", "Value"],
-      "CUFLOTAS2-S7-400PV_FE_LINE1",
-      "%"
-    );
-    setCircGauge2(gauge2 as GoogleChartData);
   }, [rawData]);
 
+  useEffect(() => {
+    if (lastRecs) {
+      // 1 element - vertical gauge
+      setPV(lastRecs[0]);
+      // 3 elemet - google gauge 1
+      const gauge1 = makeGoogleGauge(["Cu %", "Value"], lastRecs[1], "%");
+      setCircGauge1(gauge1 as GoogleChartData);
+
+      // 4 elemet - google gauge 2
+      const gauge2 = makeGoogleGauge(["Fe %", "Value"], lastRecs[2], "%");
+      setCircGauge2(gauge2 as GoogleChartData);
+    }
+  }, [lastRecs]);
+
+  const handleMonthSelect = (year: number, month: number) => {
+    console.log(`Selected: ${month + 1}/${year}`);
+    // Do something with the selected year and month
+  };
+
   return (
-    <Grid columns="5" rows={"2"} m={"10"} gap={"3"} p={"2"}>
+    <Grid
+      columns="5"
+      rows="350px 500px"
+      gap={"1"}
+      p={"1"}
+      style={{ border: "1px solid black" }}
+    >
+      {/* <div style={{ border: "1px solid red" }}>Item 1</div>
+      <div style={{ border: "1px solid red" }}>Item 2</div>
+      <div style={{ border: "1px solid red" }}>Item 3</div>
+      <div style={{ border: "1px solid red" }}>Item 4</div>
+      <div style={{ border: "1px solid red" }}>Item 5</div>
+      <div style={{ border: "1px solid red" }}>Item 6</div> */}
+
       {/* LINEAR GAUGE WIH TARGET */}
-      <Box gridColumnStart={"1"}>
-        <LinearGaugeWithTargetAndSpAdjuster
+      <Box gridColumnStart={"1"} gridRow={"1"}>
+        <LinearGaugeWithTargetAndSpAdjuster2
           title="Извличане ред 1"
           description="Реализация на извличането на ред 1."
           target={90}
@@ -108,32 +118,12 @@ export default function TargetsPage() {
         />
       </Box>
 
-      {/* BIG TREND */}
-      <Box gridColumnStart={"2"} gridColumnEnd={"6"}>
+      {/* RADIAL GAUGES */}
+      <Box gridColumn={"2"} gridRow={"1"}>
         <Card
           style={{
             width: "100%",
             height: "100%",
-          }}
-        >
-          <Text size="4" weight="bold">
-            Тренд на извличането
-          </Text>
-          {/* <Text as="p" size="2" color="gray">
-            за периода: 2022-01-01 - 2022-01-07
-          </Text> */}
-          <Box mt={"0"} height={"100%"}>
-            {rawData && <Trend data={googleChart!} />}
-          </Box>
-        </Card>
-      </Box>
-
-      {/* RADIAL GAUGES */}
-      <Box gridColumn={"1"} gridRow={"2"}>
-        <Card
-          style={{
-            width: "100%",
-            height: "60%",
           }}
         >
           <Flex direction="column" gap="1" align={"center"}>
@@ -161,11 +151,11 @@ export default function TargetsPage() {
           </Flex>
         </Card>
       </Box>
-      <Box gridColumn={"2"} gridRow={"2"}>
+      <Box gridColumn={"3"} gridRow={"1"}>
         <Card
           style={{
             width: "100%",
-            height: "60%",
+            height: "100%",
           }}
         >
           <Flex direction="column" gap="1" align={"center"}>
@@ -193,8 +183,45 @@ export default function TargetsPage() {
           </Flex>
         </Card>
       </Box>
-      <Box gridColumn={"3"} gridRow={"2"}>
-        <HtmlPlot />
+
+      {/* BIG TREND */}
+      <Box gridRow={"2"} gridColumnStart={"1"} gridColumnEnd={"4"}>
+        <Card
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <Flex direction="column" gap="1" align={"center"}>
+            <Text size="4" weight="bold">
+              Тренд на извличането
+            </Text>
+          </Flex>
+
+          <Box mt={"0"} height={"100%"}>
+            {rawData && <Trend data={googleChart!} />}
+          </Box>
+        </Card>
+      </Box>
+
+      {/* HTML PLOT */}
+      <Box gridRow={"2"} gridColumnStart={"4"} gridColumnEnd={"6"}>
+        <Card
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <Flex direction="column" gap="1" align={"center"}>
+            <Text size="4" weight="bold">
+              Диаграма на разсейване
+            </Text>
+          </Flex>
+          <HtmlPlot />
+        </Card>
+      </Box>
+      <Box gridRow={"1"} gridColumn={"5"}>
+        <MyMonthPicker onSelect={handleMonthSelect} />
       </Box>
     </Grid>
   );

@@ -8,16 +8,11 @@ from pydantic import BaseModel, Field
 from datetime import datetime as dt
 
 app = FastAPI()
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"], 
-#     allow_headers=["*"],
-# )
+origins = ["http://localhost:3000", "https://localhost:3000"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,14 +27,18 @@ class QueryParams(BaseModel):
     start: dt = Field(None, description="The start date of the data range")
     end: dt = Field(None, description="The end date of the data range")
 
-# class TagData(BaseModel):
-#     tag_id: int
-#     tagname: str
-#     timestamp: str
-#     value: float
+
 class TagData(BaseModel):
     timestamp: str
     data: Dict[str, float]
+
+@app.options("/{path:path}")
+async def preflight_handler():
+    return {"message": "Preflight request handled"}
+
+@app.get("/test-cors")
+async def test_cors():
+    return {"message": "CORS is working"}
 
 @app.get("/")
 def read_root():
@@ -92,4 +91,4 @@ def get_scatter():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("api_pulse:app", host="localhost", port=8000, reload=True)
+    uvicorn.run("api_pulse:app", host="0.0.0.0", port=8000, reload=True)

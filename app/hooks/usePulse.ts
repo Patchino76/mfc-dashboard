@@ -25,7 +25,10 @@ interface ApiDataPoint {
   };
 }
 
-export function useLastRecords(tag_names: string[]) {
+export function useLastRecords(
+  tag_names: string[],
+  refreshInterval: number = 15
+) {
   return useQuery<number[]>({
     queryKey: ["simpletrend"],
     queryFn: async () => {
@@ -35,16 +38,18 @@ export function useLastRecords(tag_names: string[]) {
           params: { tags: tag_names.join(",") },
         }
       );
-      console.log(response.data);
       return response.data;
     },
     staleTime: 0,
-    refetchInterval: 15000,
+    refetchInterval: refreshInterval * 1000,
     networkMode: "always",
   });
 }
 
-export function usePulseTrendwithTS(queryData: qryProps2) {
+export function usePulseTrendwithTS(
+  queryData: qryProps2,
+  refreshInterval: number = 20
+) {
   return useQuery<ApiDataPoint[]>({
     queryKey: ["trend-ts"],
     queryFn: async () => {
@@ -57,8 +62,9 @@ export function usePulseTrendwithTS(queryData: qryProps2) {
       );
       return response.data;
     },
+
     staleTime: 0,
-    refetchInterval: 20000,
+    refetchInterval: refreshInterval * 1000,
     networkMode: "always",
   });
 }

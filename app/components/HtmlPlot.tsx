@@ -1,3 +1,4 @@
+import { Box } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React from "react";
@@ -28,7 +29,9 @@ const HtmlPlot = () => {
     }
     // console.log(html);
   }, [html, containerRef]);
-  return <div ref={containerRef}></div>;
+  return (
+    <div ref={containerRef} style={{ width: "100%", height: "100%" }}></div>
+  );
 };
 
 export default HtmlPlot;

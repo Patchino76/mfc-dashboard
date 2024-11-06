@@ -1,14 +1,19 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
+} from "@/components/ui/navigation-menu";
+import MyMonthPicker from "./components/MyMonthPicker";
 
 export function Navbar() {
+  // const handleMonthSelect = (year: number, month: number) => {
+  //   console.log(`Selected: ${month + 1}/${year}`);
+  //   // Do something with the selected year and month
+  // };
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
@@ -38,9 +43,10 @@ export function Navbar() {
           </NavigationMenuList>
         </NavigationMenu>
         <div className="ml-auto flex items-center space-x-4">
+          {/* <MyMonthPicker onSelect={handleMonthSelect} /> */}
           <Button variant="outline">Sign In</Button>
         </div>
       </div>
     </header>
-  )
+  );
 }

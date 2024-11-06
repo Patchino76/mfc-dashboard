@@ -27,22 +27,10 @@ class PulseData:
         cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
         self.cursor = cnxn.cursor()
         self.df = pd.DataFrame()
-        self.fig, self.ax = plt.subplots()
+        self.fig, self.ax = plt.subplots(figure=(2, 2))
 
     
-    def get_data_by_tag(self,tag_name: list, counts: int = 10) -> np.ndarray:
-        tag_id = next((tag["id"] for tag in sql_tags if tag["name"] == tag_name), None)
-        if tag_id is None:
-            raise ValueError(f"Tag '{tag_name}' not found.")
-        
-        query_str = f"select top {counts} IndexTime, LoggerTagID, Value from \
-            LoggerValues where LoggerTagID = {tag_id} order by IndexTime desc"
-        self.cursor.execute(query_str)
-        rows = self.cursor.fetchall()
-        
-        values = np.array([float(row[2]) for row in rows])
-        return values
-    
+  
     def get_last_records(self, tags: str) -> List[float]:
         tag_names = [x.strip() for x in tags.split(',')]
 
@@ -61,17 +49,27 @@ class PulseData:
         return values
 
     
-    def clean_df_outliers(self, df, columns=None, threshold=3):
-
+    def clean_df_outliers(self,df, columns=None, threshold=4):
         if columns is None:
             columns = df.columns
-        
+            
         for column in columns:
+            print(column)
             if pd.api.types.is_numeric_dtype(df[column]):
                 mean = df[column].mean()
                 std = df[column].std()
-                outliers = (df[column] - mean).abs() > threshold * std
-                df.loc[outliers, column] = mean
+                # Calculate the upper and lower bounds
+                lower_bound = mean - threshold * std
+                upper_bound = mean + threshold * std
+                
+                # Replace outliers with NaN first to avoid overwriting valid data
+                outliers = (df[column] < lower_bound) | (df[column] > upper_bound)
+                df.loc[outliers, column] = None  # Set outliers to NaN
+                
+                # Fill NaN values with the mean
+                df = df[df > 0]
+                df[column] = df[column].fillna(mean)
+
         return df
 
    
@@ -90,6 +88,7 @@ class PulseData:
             rows = [list(row) for row in rows]
 
             tag_name = next((tag["name"] for tag in sql_tags if tag["id"] == tag_id), None)
+           
             data.append({"tagname": tag_name, "df": pd.DataFrame(rows, columns=['timestamp', 'value'])})
 
         for item in data: #setting the dt index
@@ -123,21 +122,24 @@ class PulseData:
         if self.df.shape == (0,0):
             print("No data available")
             return "No data available"
-        print(self.df.head(2))
+        print(self.df.head(1))
+        # self.df.to_csv('output.csv', index=True)
+
+        tag2 = 'RECOVERY_LINE1_CU_LONG'
         tag1 = 'CUFLOTAS2-S7-400PV_CU_LINE_1'
-        tag2 = 'CUFLOTAS2-S7-400PV_FE_LINE1'
+        # tag2 = 'CUFLOTAS2-S7-400PV_FE_LINE1'
         desc1 = next((tag for tag in sql_tags if tag["name"] == tag1), None)["desc"]
         desc2 = next((tag for tag in sql_tags if tag["name"] == tag2), None)["desc"]
-        title = "Диаграма на разпърскване"
+        # title = "Диаграма на разпърскване"
      
-        values1 = self.df[tag1].values
-        values2 = self.df[tag2].values
- 
+        self.fig, self.ax = plt.subplots(figure=(10, 10),  dpi=90)
         sns.regplot(self.df, x=tag1, y=tag2, ax=self.ax)
-        self.ax.set_title(title)
+        # self.ax.set_title(title)
         self.ax.set_xlabel(desc1)
         self.ax.set_ylabel(desc2)
 
+        
+        
         html = mpld3.fig_to_html(self.fig)
         print(next((tag for tag in sql_tags if tag["name"] == tag1), None)["desc"])
         return html
