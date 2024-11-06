@@ -36,9 +36,11 @@ const LinearGaugeWithTarget = ({
 
   return (
     <Card className="w-full max-w-sm m-3">
-      <CardHeader >
+      <CardHeader>
         <CardTitle className="flex justify-center">Извличане</CardTitle>
-        <CardDescription className="flex justify-center">Действително спрямо цел</CardDescription>
+        <CardDescription className="flex justify-center">
+          Действително спрямо цел
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer
@@ -101,14 +103,14 @@ const LinearGaugeWithTarget = ({
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex justify-center">
-      <SetpointAdjuster
-            value={spValue}
-            onChange={setSpValue}
-            step={0.1}
-            min={min}
-            max={max}
-            unit="%"
-          />
+        <SetpointAdjuster
+          value={spValue}
+          onChange={setSpValue}
+          step={0.1}
+          min={min}
+          max={max}
+          unit="%"
+        />
       </CardFooter>
     </Card>
   );

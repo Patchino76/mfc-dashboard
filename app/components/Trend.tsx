@@ -1,8 +1,8 @@
 "use client";
 import { Chart } from "react-google-charts";
-import { ChartData } from "../targets/page";
+import { GoogleChartData } from "../targets/page";
 
-const Trend = ({ data }: { data: ChartData }) => {
+const Trend = ({ data }: { data: GoogleChartData }) => {
   // console.log(data);
   if (!data || data.length === 0) {
     return <div>No data available</div>;
@@ -26,7 +26,17 @@ const Trend = ({ data }: { data: ChartData }) => {
     curveType: "function",
     // colors: ["blue"],
     legend: { position: "none" }, // Hide the legend
-    series: [{ color: "blue" }],
+    series: {
+      0: {
+        color: "blue",
+        lineWidth: 2,
+      },
+      1: {
+        color: "red",
+        lineWidth: 1,
+        lineDashStyle: [5, 5], // Dashed line
+      },
+    },
     lineWidth: 2,
     intervals: { style: "area" },
     // gridlines: { color: "red", count: -1 },

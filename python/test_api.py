@@ -17,8 +17,8 @@ print(response.url)
 
 # %%
 response = requests.get(
-    'http://localhost:8000/pulse-ts',
-    params={'tags': ['RECOVERY_LINE1_CU_LONG', 'RECOVERY_LINE2_CU_LONG'], 'num_records': 3}, 
+    'http://localhost:8000/pulse-last',
+    params={'tags': ['RECOVERY_LINE1_CU_LONG', 'RECOVERY_LINE2_CU_LONG']}, 
 )
 try:
     data = response.json()
