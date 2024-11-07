@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Any, List, Dict
 from sim_trend import SimulateTrend
@@ -88,6 +88,12 @@ def get_data(params: QueryParams = Depends()):
 def get_scatter():
     data = trend.get_scatter()
     return data
+
+@app.get("/image", response_model=str)
+def get_image():
+    buf = trend.get_image()
+
+    return Response(content=buf.getvalue(), media_type="image/png")
 
 if __name__ == "__main__":
     import uvicorn

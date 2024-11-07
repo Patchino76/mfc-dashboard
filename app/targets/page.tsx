@@ -1,13 +1,19 @@
 "use client";
 import { Card, Flex, Box, Text, Grid } from "@radix-ui/themes";
-import { useLastRecords, usePulseTrendwithTS } from "../hooks/usePulse";
-import LinearGaugeWithTargetAndSpAdjuster from "../components/LinearGaugeWithTargetAndSpAdjuster";
+import {
+  useLastRecords,
+  usePulsePng,
+  usePulseTrendwithTS,
+} from "../hooks/usePulse";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import Trend from "../components/Trend";
 import RadialGoogleGauge from "../components/RadialGoogleGauge";
-import HtmlPlot from "../components/HtmlPlot";
 import LinearGaugeWithTargetAndSpAdjuster2 from "../components/LinearGaugeWithTargetAndSpAdjuster2";
 import MyMonthPicker from "../components/MyMonthPicker";
+import { BarChartRechart } from "../components/BarChartRechart";
+import { BarChartRechart2 } from "../components/BarChartRechart2";
+import { getDateWithLessHours } from "../utils/dateUtils";
 
 export type ChartRow = (string | number)[];
 export type GoogleChartData = [string[], ...ChartRow[]];
@@ -23,10 +29,13 @@ export default function TargetsPage() {
     "CUFLOTAS2-S7-400PV_FE_LINE1",
   ];
   const start = new Date("2024-11-01 00:06:00").toISOString();
+  const start8h = getDateWithLessHours(8, new Date());
   const end = new Date().toISOString();
 
+  //HOOKS------------------------------------------------------------------
   const { data: rawData } = usePulseTrendwithTS({ tags, start, end }, 30);
   const { data: lastRecs } = useLastRecords(tags, 20);
+  const { data: imageUrl, isLoading, error } = usePulsePng();
 
   const [pv, setPV] = useState<number>();
   const [googleChart, setGoogleChart] = useState<GoogleChartData>();
@@ -61,6 +70,17 @@ export default function TargetsPage() {
     return gauge;
   };
 
+  const makeRechartBarchart = (tag: string, hoursBack: number = 8) => {
+    let rawArray = flattenData(rawData!.slice(0, hoursBack), tags);
+    const index = tags.indexOf(tag);
+
+    const values = rawArray.map((row) => row[index + 1]);
+    // console.log(rawArray[index + 1]);
+    console.log(values);
+
+    // return chart;
+  };
+
   // USE EFFFECTS----------------------------------------------------------
   useEffect(() => {
     if (!rawData) return;
@@ -72,6 +92,8 @@ export default function TargetsPage() {
       90
     );
     setGoogleChart(trend as GoogleChartData);
+
+    makeRechartBarchart("RECOVERY_LINE1_CU_LONG");
   }, [rawData]);
 
   useEffect(() => {
@@ -184,6 +206,10 @@ export default function TargetsPage() {
         </Card>
       </Box>
 
+      {/* BAR CHART RECHART */}
+      <Box gridRow={"1"} gridColumn={"4"}>
+        <BarChartRechart />
+      </Box>
       {/* BIG TREND */}
       <Box gridRow={"2"} gridColumnStart={"1"} gridColumnEnd={"4"}>
         <Card
@@ -217,7 +243,26 @@ export default function TargetsPage() {
               Диаграма на разсейване
             </Text>
           </Flex>
-          <HtmlPlot />
+          {/* <HtmlPlot /> */}
+          <Flex
+            p={"5rem"}
+            // m={"10"}
+            justify={"center"}
+            align={"center"}
+            width={"100%"}
+            height={"100%"}
+          >
+            {imageUrl && (
+              <Image
+                src={imageUrl}
+                alt="Seaborn Plot"
+                width={800} // Set the desired width
+                height={600} // Set the desired height
+                quality={100} // Set the quality (1-100)
+                layout="responsive" // Ensure the image is responsive
+              />
+            )}
+          </Flex>
         </Card>
       </Box>
       <Box gridRow={"1"} gridColumn={"5"}>

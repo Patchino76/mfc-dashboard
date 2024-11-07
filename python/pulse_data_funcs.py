@@ -10,7 +10,7 @@ import matplotlib
 import seaborn as sns
 import mpld3
 from datetime import datetime as dt
-import threading
+import io
 
 matplotlib.use('Agg')
 pd.set_option('future.no_silent_downcasting', True)
@@ -43,9 +43,8 @@ class PulseData:
             rows = self.cursor.fetchall()
 
             if rows:  # Check if rows is not empty
-                # print(rows)
                 values.append(float(rows[0][0]))
-        print(values)
+
         return values
 
     
@@ -54,7 +53,6 @@ class PulseData:
             columns = df.columns
             
         for column in columns:
-            print(column)
             if pd.api.types.is_numeric_dtype(df[column]):
                 mean = df[column].mean()
                 std = df[column].std()
@@ -122,8 +120,6 @@ class PulseData:
         if self.df.shape == (0,0):
             print("No data available")
             return "No data available"
-        print(self.df.head(1))
-        # self.df.to_csv('output.csv', index=True)
 
         tag2 = 'RECOVERY_LINE1_CU_LONG'
         tag1 = 'CUFLOTAS2-S7-400PV_CU_LINE_1'
@@ -133,17 +129,46 @@ class PulseData:
         # title = "Диаграма на разпърскване"
      
         self.fig, self.ax = plt.subplots(figure=(10, 10),  dpi=90)
-        sns.regplot(self.df, x=tag1, y=tag2, ax=self.ax)
-        # self.ax.set_title(title)
+        # sns.regplot(self.df, x=tag1, y=tag2, ax=self.ax)
+
+
+        # print(self.df.head())
+        g = sns.jointplot(x=tag2, y=tag1, data=self.df, kind="reg", truncate=False, color="m", height=7, ax = self.ax)
+        # g.fig.suptitle("Scatter Plot with Regression Line", y=1.03)
+        # self.ax.set_title(title)  
         self.ax.set_xlabel(desc1)
         self.ax.set_ylabel(desc2)
-
         
-        
+        # plt.savefig("fig.jpg", format="jpg", dpi=300, bbox_inches='tight')
+        # mpld3.show()
+        # mpld3.save_html(self.fig, 'scatter2.html')
         html = mpld3.fig_to_html(self.fig)
-        print(next((tag for tag in sql_tags if tag["name"] == tag1), None)["desc"])
         return html
-
-
     
-   
+    def get_image(self, tag1: str="X", tag2: str="Y") -> str:
+        if self.df.shape == (0,0):
+            print("No data available")
+            return "No data available"
+        
+        tag2 = 'RECOVERY_LINE1_CU_LONG'
+        tag1 = 'CUFLOTAS2-S7-400PV_CU_LINE_1'
+        # tag2 = 'CUFLOTAS2-S7-400PV_FE_LINE1'
+        desc1 = next((tag for tag in sql_tags if tag["name"] == tag1), None)["desc"]
+        desc2 = next((tag for tag in sql_tags if tag["name"] == tag2), None)["desc"]
+     
+        self.fig, self.ax = plt.subplots(figure=(9, 9),  dpi=600)
+        g= sns.jointplot(x=tag2, y=tag1, data=self.df, kind="reg", truncate=True, color="blue", height=7)
+        # sns.regplot(self.df, x=tag1, y=tag2, ax=self.ax)
+        g.ax_joint.set_xlabel(desc1, fontsize=14)
+        g.ax_joint.set_ylabel(desc2, fontsize=14)
+        # self.ax.set_xlabel(desc1)
+        # self.ax.set_ylabel(desc2)
+        plt.tight_layout()
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        # plt.savefig("fig.jpg", format="jpg", dpi=600, bbox_inches='tight')
+        buf.seek(0)
+        plt.close()
+
+        return buf

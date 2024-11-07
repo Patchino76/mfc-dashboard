@@ -1,11 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-// export interface qryProps1 {
-//   tags: string[];
-//   num_records: number;
-// }
-export interface qryProps2 {
+export interface qryProps {
   tags: string[];
   start: string;
   end: string;
@@ -18,7 +14,6 @@ export interface responseProps {
   value: number;
 }
 
-<<<<<<< HEAD
 interface DataPoint {
   [key: string]: number;
 }
@@ -53,7 +48,7 @@ export function useLastRecords(
 }
 
 export function usePulseTrendwithTS(
-  queryData: qryProps2,
+  queryData: qryProps,
   refreshInterval: number = 20
 ) {
   return useQuery<ApiDataPoint[]>({
@@ -62,12 +57,34 @@ export function usePulseTrendwithTS(
       const { tags, start, end } = queryData;
       const response = await axios.get<ApiDataPoint[]>(
         "http://localhost:8000/pulse-ts",
->>>>>>> 4aae00da0b7487d44ccb24931b9ea3d586640dde
+
         {
           params: { tags: tags.join(","), start, end },
         }
       );
       return response.data;
+    },
+
+    staleTime: 0,
+    refetchInterval: refreshInterval * 1000,
+    networkMode: "always",
+  });
+}
+
+export function usePulsePng(refreshInterval: number = 23) {
+  return useQuery({
+    queryKey: ["png-image"],
+    queryFn: async () => {
+      const response = await axios.get(
+        "http://localhost:8000/image",
+
+        {
+          // params: { tags: tags.join(","), start, end },
+          responseType: "blob",
+        }
+      );
+      const imageUrl = URL.createObjectURL(response.data);
+      return imageUrl;
     },
 
     staleTime: 0,
