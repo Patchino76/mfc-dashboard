@@ -18,7 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
-import { SetpointAdjuster } from "./SetpointAdjuster";
+import { SetpointAdjuster } from "./SetpointAdjuster3";
 
 const LinearGaugeWithTarget = ({
   actual = 95.1,

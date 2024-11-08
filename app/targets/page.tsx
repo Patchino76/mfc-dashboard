@@ -9,13 +9,15 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import Trend from "../components/Trend";
 import RadialGoogleGauge from "../components/RadialGoogleGauge";
-import LinearGaugeWithTargetAndSpAdjuster2 from "../components/LinearGaugeWithTargetAndSpAdjuster2";
+import LinearGaugeWithTargetAndSpAdjuster2 from "../components/LinearGaugeWithTargetAndSpAdjuster";
 import MyMonthPicker from "../components/MyMonthPicker";
 import { BarChartRechart } from "../components/BarChartRechart";
 import { BarChartRechart2 } from "../components/BarChartRechart2";
 import { getDateWithLessHours } from "../utils/dateUtils";
 import { BarChartRechartSm } from "../components/BarChartRechartSm";
 import TableChart from "../components/TableChart";
+import LinearGaugeWithTargetAndSpAdjuster from "../components/LinearGaugeWithTargetAndSpAdjuster";
+import useSetPoint from "../hooks/store";
 
 export type ChartRow = (string | number)[];
 export type GoogleChartData = [string[], ...ChartRow[]];
@@ -38,6 +40,7 @@ export default function TargetsPage() {
   const { data: rawData } = usePulseTrendwithTS({ tags, start, end }, 30);
   const { data: lastRecs } = useLastRecords(tags, 20);
   const { data: imageUrl, isLoading, error } = usePulsePng();
+  const { setPoint } = useSetPoint();
 
   //STATES----------------------------------------------------------------
   const [pv, setPV] = useState<number>();
@@ -79,7 +82,7 @@ export default function TargetsPage() {
       const timestamp = row[0] as string; // Type assertion to string
       const value = row[1] as number; // Type assertion to number
       const time = timestamp.split(" ")[1]; // Extract hh
-      const newValue = sp! - value; // Subtract value from given number
+      const newValue = setPoint - value; // Subtract value from given number
       return [time, newValue];
     });
     const table: GoogleChartData = [header, ...result];
@@ -111,7 +114,7 @@ export default function TargetsPage() {
     const trend = makeGoogleTrend(
       ["Timestamp", "Value", "SP"],
       ["RECOVERY_LINE1_CU_LONG"],
-      88
+      setPoint
     );
     setGoogleChart(trend as GoogleChartData);
 
@@ -128,7 +131,7 @@ export default function TargetsPage() {
     setBarChartSm2(barchart2);
 
     // console.log("2", barchart2);
-  }, [rawData]);
+  }, [rawData, setPoint]);
 
   useEffect(() => {
     if (lastRecs) {
@@ -166,7 +169,7 @@ export default function TargetsPage() {
 
       {/* LINEAR GAUGE WIH TARGET */}
       <Box gridColumnStart={"1"} gridRow={"1"}>
-        <LinearGaugeWithTargetAndSpAdjuster2
+        <LinearGaugeWithTargetAndSpAdjuster
           title="Извличане ред 1"
           description="Реализация на извличането на ред 1."
           target={90}

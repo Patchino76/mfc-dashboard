@@ -7,9 +7,6 @@ import { cn } from "@/lib/utils";
 import useSetPoint from "../hooks/store";
 
 interface SetpointAdjusterProps {
-  value: number;
-  onChange: (value: number) => void;
-  step?: number;
   min?: number;
   max?: number;
   className?: string;
@@ -17,44 +14,21 @@ interface SetpointAdjusterProps {
 }
 
 export function SetpointAdjuster({
-  value,
-  onChange,
-  step = 0.1,
   min = 0,
   max = 100,
   className,
   unit,
 }: SetpointAdjusterProps) {
-  const [localValue, setLocalValue] = useState(value.toFixed(1));
-  const { setPoint, increase, decrease } = useSetPoint();
-
-  const adjustValue = (adjustment: number) => {
-    const newValue = Math.min(max, Math.max(min, value + adjustment));
-    onChange(newValue);
-    setLocalValue(newValue.toFixed(1));
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalValue(e.target.value);
-    const numValue = parseFloat(e.target.value);
-    if (!isNaN(numValue) && numValue >= min && numValue <= max) {
-      onChange(numValue);
-    }
-  };
-
-  const handleBlur = () => {
-    const numValue = parseFloat(localValue);
-    if (isNaN(numValue) || numValue < min || numValue > max) {
-      setLocalValue(value.toString());
-    }
-  };
+  const { setPoint, setSetPoint, increase, decrease } = useSetPoint();
 
   return (
     <div className={cn("flex gap-2 w-fit h-12 items-center", className)}>
       <Button
         variant="outline"
         size="icon"
-        onClick={() => adjustValue(-step)}
+        onClick={() => {
+          decrease();
+        }}
         className="w-12 px-0"
       >
         <ChevronDown className="h-6 w-6" />
@@ -63,9 +37,9 @@ export function SetpointAdjuster({
       <div className="relative  flex items-center justify-center">
         <Input
           type="text"
-          value={localValue}
-          onChange={handleInputChange}
-          onBlur={handleBlur}
+          value={setPoint.toFixed(1)}
+          onChange={(e) => setSetPoint(parseFloat(e.target.value))}
+          onBlur={() => setSetPoint(setPoint)}
           className="w-28 text-center pr-8 h-9"
         />
         {unit && (
@@ -78,7 +52,7 @@ export function SetpointAdjuster({
       <Button
         variant="outline"
         size="icon"
-        onClick={() => adjustValue(step)}
+        onClick={() => increase()}
         className="w-12 px-0"
       >
         <ChevronUp className="h-6 w-6" />
