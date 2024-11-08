@@ -41,8 +41,8 @@ const RadialGoogleGauge = ({
   return (
     <Chart
       chartType="Gauge"
-      // width="100%"
-      // height="100%"
+      // width="70%"
+      // height="70%"
       data={data}
       options={options}
     />

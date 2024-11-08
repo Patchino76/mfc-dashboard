@@ -1,29 +1,29 @@
 "use client";
 import React from "react";
 import { Chart } from "react-google-charts";
+import { GoogleChartData } from "../targets/page";
 
-export const options = {
+const options = {
   allowHtml: true,
   showRowNumber: false,
 };
 
-export const formatters = [
+const formatters = [
   {
     type: "BarFormat" as const,
     column: 1,
     options: {
-      width: 120,
+      width: 140,
     },
   },
 ];
 
-const TableChart = ({dataTable} : {dataTable : (string | number)[][]}) => {
-
+const TableChart = ({ dataTable }: { dataTable: GoogleChartData }) => {
   return (
     <Chart
       chartType="Table"
       // width="100%"
-      height="400px"
+      // height="400px"
       data={dataTable}
       options={options}
       formatters={formatters}

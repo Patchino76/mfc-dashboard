@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import seaborn as sns
 import mpld3
-from datetime import datetime as dt
+from datetime import datetime as dt, timedelta
 import io
 
 matplotlib.use('Agg')
@@ -38,7 +38,7 @@ class PulseData:
         
         values = []
         for tag_id in tag_ids:
-            query_str = f"select top 1 Value from LoggerValues where LoggerTagID = {tag_id} order by IndexTime desc"
+            query_str = f"select top 1 Value from LoggerValues where LoggerTagID = {tag_id} ORDER BY IndexTime DESC"
             self.cursor.execute(query_str)
             rows = self.cursor.fetchall()
 
@@ -80,14 +80,21 @@ class PulseData:
         data = []
         for tag_id in tag_ids:
             query_str = f"SELECT  IndexTime, Value FROM LoggerValues WHERE LoggerTagID = {tag_id} \
-                AND IndexTime BETWEEN '{start}' AND '{end}' ORDER BY IndexTime DESC"
+                AND IndexTime BETWEEN '{start}' AND '{end}' ORDER BY IndexTime ASC"
             self.cursor.execute(query_str)
             rows = self.cursor.fetchall()
             rows = [list(row) for row in rows]
 
+            corrected_rows = []
+            for row in rows:
+                index_time = row[0]
+                # Assuming the timestamp is 2 hours ahead
+                corrected_time = index_time + timedelta(hours=2)
+                corrected_rows.append([corrected_time, row[1]])
+
             tag_name = next((tag["name"] for tag in sql_tags if tag["id"] == tag_id), None)
            
-            data.append({"tagname": tag_name, "df": pd.DataFrame(rows, columns=['timestamp', 'value'])})
+            data.append({"tagname": tag_name, "df": pd.DataFrame(corrected_rows, columns=['timestamp', 'value'])})
 
         for item in data: #setting the dt index
             item['df']['timestamp'] = pd.to_datetime(item['df']['timestamp'])
@@ -109,9 +116,11 @@ class PulseData:
         
         df = df.ffill().infer_objects(copy=False)
         df = self.clean_df_outliers(df)
+        df = df.iloc[::-1]
         df_to_dict = {index.strftime("%Y-%m-%d %H:%M"): row.to_dict() for index, row in df.iterrows()}
 
         self.df = df
+        print(self.df)
         return df_to_dict
             
 
@@ -150,19 +159,18 @@ class PulseData:
             print("No data available")
             return "No data available"
         
-        tag2 = 'RECOVERY_LINE1_CU_LONG'
-        tag1 = 'CUFLOTAS2-S7-400PV_CU_LINE_1'
+        tag1 = 'RECOVERY_LINE1_CU_LONG'
+        tag2 = 'CUFLOTAS2-S7-400PV_CU_LINE_1'
         # tag2 = 'CUFLOTAS2-S7-400PV_FE_LINE1'
         desc1 = next((tag for tag in sql_tags if tag["name"] == tag1), None)["desc"]
         desc2 = next((tag for tag in sql_tags if tag["name"] == tag2), None)["desc"]
      
-        self.fig, self.ax = plt.subplots(figure=(9, 9),  dpi=600)
-        g= sns.jointplot(x=tag2, y=tag1, data=self.df, kind="reg", truncate=True, color="blue", height=7)
+        self.fig, self.ax = plt.subplots(figure=(8, 8),  dpi=600)
+        g= sns.jointplot(x=tag1, y=tag2, data=self.df, kind="reg", truncate=True, color="blue", height=7)
         # sns.regplot(self.df, x=tag1, y=tag2, ax=self.ax)
         g.ax_joint.set_xlabel(desc1, fontsize=14)
         g.ax_joint.set_ylabel(desc2, fontsize=14)
-        # self.ax.set_xlabel(desc1)
-        # self.ax.set_ylabel(desc2)
+
         plt.tight_layout()
 
         buf = io.BytesIO()

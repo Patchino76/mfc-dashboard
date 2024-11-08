@@ -14,6 +14,8 @@ import MyMonthPicker from "../components/MyMonthPicker";
 import { BarChartRechart } from "../components/BarChartRechart";
 import { BarChartRechart2 } from "../components/BarChartRechart2";
 import { getDateWithLessHours } from "../utils/dateUtils";
+import { BarChartRechartSm } from "../components/BarChartRechartSm";
+import TableChart from "../components/TableChart";
 
 export type ChartRow = (string | number)[];
 export type GoogleChartData = [string[], ...ChartRow[]];
@@ -37,8 +39,15 @@ export default function TargetsPage() {
   const { data: lastRecs } = useLastRecords(tags, 20);
   const { data: imageUrl, isLoading, error } = usePulsePng();
 
+  //STATES----------------------------------------------------------------
   const [pv, setPV] = useState<number>();
+  const [sp, setSP] = useState<number>(87.6);
   const [googleChart, setGoogleChart] = useState<GoogleChartData>();
+  const [googleTable, setGoogleTable] = useState<GoogleChartData>();
+  const [barChartSm1, setBarChartSm1] =
+    useState<{ hour: string; pv: number }[]>();
+  const [barChartSm2, setBarChartSm2] =
+    useState<{ hour: string; pv: number }[]>();
 
   //circular gauge
   const [circGauge1, setCircGauge1] = useState<GoogleChartData>();
@@ -50,7 +59,6 @@ export default function TargetsPage() {
     return array.map((item) => {
       const values = tags.map((tag) => {
         const value = item.data[tag];
-        // console.log(`Tag: ${tag}, Value: ${value}`); // Debugging line
         return value;
       });
       return [item.timestamp, ...values];
@@ -65,20 +73,34 @@ export default function TargetsPage() {
     return chart;
   };
 
+  const makeGoogleTable = (header: string[], tags: string[]) => {
+    let rawArray = flattenData(rawData!, tags).slice(0, 10);
+    const result = rawArray.map((row) => {
+      const timestamp = row[0] as string; // Type assertion to string
+      const value = row[1] as number; // Type assertion to number
+      const time = timestamp.split(" ")[1]; // Extract hh
+      const newValue = sp! - value; // Subtract value from given number
+      return [time, newValue];
+    });
+    const table: GoogleChartData = [header, ...result];
+    return table;
+  };
+
+  const makeRechartChart = (tags: string[]) => {
+    let rawArray = flattenData(rawData!, tags).slice(0, 8);
+    const result = rawArray.map((row) => {
+      const timestamp = row[0] as string; // Type assertion to string
+      const value = row[1] as number; // Type assertion to number
+      const hour = timestamp.split(" ")[1].slice(0, 2); // Extract hh:mm
+      const pv = value; // Subtract value from given number
+      return { hour, pv };
+    });
+    // console.log("bar", result);
+    return result;
+  };
   const makeGoogleGauge = (header: string[], value: number, unit: string) => {
     const gauge: GoogleChartData = [header, [unit, value]];
     return gauge;
-  };
-
-  const makeRechartBarchart = (tag: string, hoursBack: number = 8) => {
-    let rawArray = flattenData(rawData!.slice(0, hoursBack), tags);
-    const index = tags.indexOf(tag);
-
-    const values = rawArray.map((row) => row[index + 1]);
-    // console.log(rawArray[index + 1]);
-    console.log(values);
-
-    // return chart;
   };
 
   // USE EFFFECTS----------------------------------------------------------
@@ -89,11 +111,23 @@ export default function TargetsPage() {
     const trend = makeGoogleTrend(
       ["Timestamp", "Value", "SP"],
       ["RECOVERY_LINE1_CU_LONG"],
-      90
+      88
     );
     setGoogleChart(trend as GoogleChartData);
 
-    makeRechartBarchart("RECOVERY_LINE1_CU_LONG");
+    const table = makeGoogleTable(
+      ["часове", "SP - PV"],
+      ["RECOVERY_LINE1_CU_LONG"]
+    );
+    setGoogleTable(table as GoogleChartData);
+
+    const barchart1 = makeRechartChart(["CUFLOTAS2-S7-400PV_CU_LINE_1"]);
+    setBarChartSm1(barchart1);
+    // console.log("1", barchart1);
+    const barchart2 = makeRechartChart(["CUFLOTAS2-S7-400PV_FE_LINE1"]);
+    setBarChartSm2(barchart2);
+
+    // console.log("2", barchart2);
   }, [rawData]);
 
   useEffect(() => {
@@ -121,7 +155,7 @@ export default function TargetsPage() {
       rows="350px 500px"
       gap={"1"}
       p={"1"}
-      style={{ border: "1px solid black" }}
+      // style={{ border: "1px solid black" }}
     >
       {/* <div style={{ border: "1px solid red" }}>Item 1</div>
       <div style={{ border: "1px solid red" }}>Item 2</div>
@@ -139,8 +173,7 @@ export default function TargetsPage() {
           actual={pv} //pv
         />
       </Box>
-
-      {/* RADIAL GAUGES */}
+      {/* TABLE CHART ------------------------------------------------------*/}
       <Box gridColumn={"2"} gridRow={"1"}>
         <Card
           style={{
@@ -148,31 +181,26 @@ export default function TargetsPage() {
             height: "100%",
           }}
         >
-          <Flex direction="column" gap="1" align={"center"}>
+          <Flex direction="column" align={"center"}>
             <Text size="4" weight="bold">
-              Скрап Cu
+              Извличане по часове назад
             </Text>
             <Text as="p" size="2" color="gray">
-              моментна стойност [%]
+              разлика между задание и изпълнение [%]
             </Text>
           </Flex>
-          <Flex justify={"center"} align={"center"}>
-            {rawData && (
-              <RadialGoogleGauge
-                data={circGauge1!}
-                min={0}
-                max={0.05}
-                greenFrom={0}
-                greenTo={0.03}
-                yellowFrom={0.03}
-                yellowTo={0.04}
-                redFrom={0.04}
-                redTo={0.05}
-              />
-            )}
+          <Flex
+            direction={"column"}
+            justify={"center"}
+            align={"center"}
+            mt={"0.5rem"}
+          >
+            {rawData && <TableChart dataTable={googleTable!} />}
           </Flex>
         </Card>
       </Box>
+
+      {/* RADIAL GAUGES ---------------------------------------------------- */}
       <Box gridColumn={"3"} gridRow={"1"}>
         <Card
           style={{
@@ -180,7 +208,48 @@ export default function TargetsPage() {
             height: "100%",
           }}
         >
-          <Flex direction="column" gap="1" align={"center"}>
+          <Flex direction="column" align={"center"}>
+            <Text size="4" weight="bold">
+              Скрап Cu
+            </Text>
+            <Text as="p" size="2" color="gray">
+              моментна стойност [%]
+            </Text>
+          </Flex>
+          <Flex direction={"column"} justify={"center"} align={"center"}>
+            <Box width={"50%"} height={"50%"} style={{ position: "relative" }}>
+              {rawData && (
+                <RadialGoogleGauge
+                  data={circGauge1!}
+                  min={0}
+                  max={0.05}
+                  greenFrom={0}
+                  greenTo={0.03}
+                  yellowFrom={0.03}
+                  yellowTo={0.04}
+                  redFrom={0.04}
+                  redTo={0.05}
+                />
+              )}
+            </Box>
+            <Box mt={"0.5rem"}>
+              <BarChartRechartSm
+                chartData={barChartSm1!}
+                min={0.028}
+                max={0.03}
+              />
+            </Box>
+          </Flex>
+        </Card>
+      </Box>
+      <Box gridColumn={"4"} gridRow={"1"}>
+        <Card
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <Flex direction="column" align={"center"}>
             <Text size="4" weight="bold">
               Скрап Fe
             </Text>
@@ -188,29 +257,31 @@ export default function TargetsPage() {
               моментна стойност [%]
             </Text>
           </Flex>
-          <Flex justify={"center"} align={"center"}>
-            {rawData && (
-              <RadialGoogleGauge
-                data={circGauge2!}
-                min={0}
-                max={10}
-                greenFrom={0}
-                greenTo={3}
-                yellowFrom={3}
-                yellowTo={5}
-                redFrom={5}
-                redTo={10}
-              />
-            )}
+          <Flex direction={"column"} justify={"center"} align={"center"}>
+            <Box width={"50%"} height={"50%"} style={{ position: "relative" }}>
+              {rawData && (
+                <RadialGoogleGauge
+                  data={circGauge2!}
+                  min={0}
+                  max={10}
+                  greenFrom={0}
+                  greenTo={3}
+                  yellowFrom={3}
+                  yellowTo={5}
+                  redFrom={5}
+                  redTo={10}
+                />
+              )}
+            </Box>
+
+            <Box mt={"0.5rem"}>
+              <BarChartRechartSm chartData={barChartSm2!} min={1.8} max={2} />
+            </Box>
           </Flex>
         </Card>
       </Box>
 
-      {/* BAR CHART RECHART */}
-      <Box gridRow={"1"} gridColumn={"4"}>
-        <BarChartRechart />
-      </Box>
-      {/* BIG TREND */}
+      {/* BIG TREND ---------------------------------------------------------*/}
       <Box gridRow={"2"} gridColumnStart={"1"} gridColumnEnd={"4"}>
         <Card
           style={{
@@ -218,10 +289,14 @@ export default function TargetsPage() {
             height: "100%",
           }}
         >
-          <Flex direction="column" gap="1" align={"center"}>
+          <Flex direction="row" gap="1" align="center" justify="between">
+            <Box width={"10rem"} />
             <Text size="4" weight="bold">
               Тренд на извличането
             </Text>
+            <Box>
+              <MyMonthPicker onSelect={handleMonthSelect} />
+            </Box>
           </Flex>
 
           <Box mt={"0"} height={"100%"}>
@@ -230,7 +305,7 @@ export default function TargetsPage() {
         </Card>
       </Box>
 
-      {/* HTML PLOT */}
+      {/* HTML PLOT ---------------------------------------------------------*/}
       <Box gridRow={"2"} gridColumnStart={"4"} gridColumnEnd={"6"}>
         <Card
           style={{
@@ -238,14 +313,14 @@ export default function TargetsPage() {
             height: "100%",
           }}
         >
-          <Flex direction="column" gap="1" align={"center"}>
+          <Flex direction="row" gap="1" align="center" justify="center">
             <Text size="4" weight="bold">
               Диаграма на разсейване
             </Text>
           </Flex>
           {/* <HtmlPlot /> */}
           <Flex
-            p={"5rem"}
+            p={"7rem"}
             // m={"10"}
             justify={"center"}
             align={"center"}
@@ -254,19 +329,17 @@ export default function TargetsPage() {
           >
             {imageUrl && (
               <Image
+                // className="p-10"
                 src={imageUrl}
                 alt="Seaborn Plot"
-                width={800} // Set the desired width
-                height={600} // Set the desired height
-                quality={100} // Set the quality (1-100)
-                layout="responsive" // Ensure the image is responsive
+                layout="responsive"
+                width={320}
+                height={200}
+                quality={100}
               />
             )}
           </Flex>
         </Card>
-      </Box>
-      <Box gridRow={"1"} gridColumn={"5"}>
-        <MyMonthPicker onSelect={handleMonthSelect} />
       </Box>
     </Grid>
   );
