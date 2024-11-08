@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import useSetPoint from "../hooks/store";
 
 interface SetpointAdjusterProps {
   value: number;
@@ -25,6 +26,7 @@ export function SetpointAdjuster({
   unit,
 }: SetpointAdjusterProps) {
   const [localValue, setLocalValue] = useState(value.toFixed(1));
+  const { setPoint, increase, decrease } = useSetPoint();
 
   const adjustValue = (adjustment: number) => {
     const newValue = Math.min(max, Math.max(min, value + adjustment));
