@@ -40,7 +40,7 @@ export function SetpointAdjuster({
           value={setPoint.toFixed(1)}
           onChange={(e) => setSetPoint(parseFloat(e.target.value))}
           onBlur={() => setSetPoint(setPoint)}
-          className="w-28 text-center pr-8 h-9"
+          className="w-20 text-center pr-8 h-9"
         />
         {unit && (
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">

@@ -59,6 +59,7 @@ class PulseData:
                 # Calculate the upper and lower bounds
                 lower_bound = mean - threshold * std
                 upper_bound = mean + threshold * std
+                print("upper bound: ", upper_bound, "lower bound: ", lower_bound)
                 
                 # Replace outliers with NaN first to avoid overwriting valid data
                 outliers = (df[column] < lower_bound) | (df[column] > upper_bound)
