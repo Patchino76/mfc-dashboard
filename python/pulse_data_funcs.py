@@ -11,6 +11,7 @@ import seaborn as sns
 import mpld3
 from datetime import datetime as dt, timedelta
 import io
+from scipy.stats import gaussian_kde
 
 matplotlib.use('Agg')
 pd.set_option('future.no_silent_downcasting', True)
@@ -48,10 +49,10 @@ class PulseData:
         return values
 
     
-    def clean_df_outliers(self,df, columns=None, threshold=4):
+    def clean_df_outliers(self,df, columns=None, threshold=2):
         if columns is None:
             columns = df.columns
-            
+
         for column in columns:
             if pd.api.types.is_numeric_dtype(df[column]):
                 mean = df[column].mean()
@@ -60,16 +61,28 @@ class PulseData:
                 lower_bound = mean - threshold * std
                 upper_bound = mean + threshold * std
                 print("upper bound: ", upper_bound, "lower bound: ", lower_bound)
-                
+
                 # Replace outliers with NaN first to avoid overwriting valid data
                 outliers = (df[column] < lower_bound) | (df[column] > upper_bound)
-                df.loc[outliers, column] = None  # Set outliers to NaN
-                
+                df.loc[outliers, column] = np.nan  # Set outliers to NaN
+
                 # Fill NaN values with the mean
-                df = df[df > 0]
                 df[column] = df[column].fillna(mean)
 
         return df
+    
+    def clean_array_outliers(self, arr, threshold=4):
+        mean = np.mean(arr)
+        std = np.std(arr)
+        lower_bound = mean - threshold * std
+        upper_bound = mean + threshold * std
+        print("upper bound: ", upper_bound, "lower bound: ", lower_bound)
+
+        outliers = (arr < lower_bound) | (arr > upper_bound)
+        arr[outliers] = np.nan
+        arr = np.where(np.isnan(arr), mean, arr)
+        
+        return arr
 
    
     def get_data_by_tags(self, tag_names: list, start: dt, end: dt) -> dict:
@@ -181,3 +194,51 @@ class PulseData:
         plt.close()
 
         return buf
+    
+    def get_kde_densities(self, tag: str, sp:float):
+        if self.df.shape == (0,0):
+            print("No data available")
+            return "No data available"
+        
+        sp = float(sp)
+        data =  self.df[tag].to_numpy()
+        # data = pd.to_numeric(self.df[tag], errors='coerce').dropna().values
+        above = data[data > sp]
+        below = data[data <= sp]
+
+        above = self.clean_array_outliers(above, threshold=4)
+        below = self.clean_array_outliers(below, threshold=4)
+
+        # # Calculate densities
+        def calculate_density(data):
+            kde = gaussian_kde(data)
+
+        x = np.linspace(data.min(), data.max(), 1000)
+
+        # Calculate means
+        mean_above = np.mean(above)
+        mean_below = np.mean(below)
+
+        # Calculate distances from the target value to the means
+        distance_above = mean_above - sp
+        distance_below = sp - mean_below
+
+        # # Plotting the densities
+        plt.figure(figsize=(12, 8))
+        sns.kdeplot(data=above, fill=True, color='skyblue', label='Above Target Value')
+        sns.kdeplot(data=below, fill=True, color='salmon', label='Below Target Value')
+        plt.axvline(sp, color='red', linestyle='--', label='Target Value')
+        plt.axvline(mean_above, color='blue', linestyle='--', label='Mean Above', ymax=0.9)
+        plt.axvline(mean_below, color='brown', linestyle='--', label='Mean Below', ymax=0.9)
+        plt.title('KDE Plot of Sensor Data Above and Below Target Value')
+        plt.xlabel('Sensor Data')
+        plt.ylabel('Density')
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        # plt.savefig("fig.jpg", format="jpg", dpi=600, bbox_inches='tight')
+        buf.seek(0)
+        # plt.close()
+
+        return buf
+

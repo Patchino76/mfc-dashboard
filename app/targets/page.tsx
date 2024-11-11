@@ -2,6 +2,7 @@
 import { Card, Flex, Box, Text, Grid } from "@radix-ui/themes";
 import {
   useLastRecords,
+  usePulseDensityPng,
   usePulsePng,
   usePulseTrendwithTS,
 } from "../hooks/usePulse";
@@ -36,7 +37,6 @@ export default function TargetsPage() {
 
   //STATES----------------------------------------------------------------
   const [pv, setPV] = useState<number>();
-  // const [sp, setSP] = useState<number>(87.6);
   const [start, setStart] = useState<string>(pastDate.toISOString());
   const [end, setEnd] = useState<string>(currentDate.toISOString());
 
@@ -47,6 +47,8 @@ export default function TargetsPage() {
   );
   const { data: lastRecs } = useLastRecords(tags, 20);
   const { data: imageUrl, isLoading, error } = usePulsePng();
+  const { data: densityPngUrl, isLoading: isLoadingDensityPng } =
+    usePulseDensityPng("RECOVERY_LINE1_CU_LONG", 87);
   const { setPoint } = useSetPoint();
 
   const [googleChart, setGoogleChart] = useState<GoogleChartData>();
@@ -325,8 +327,8 @@ export default function TargetsPage() {
           </Card>
         </Box>
 
-        {/* HTML PLOT ---------------------------------------------------------*/}
-        <Box gridRow={"2"} gridColumnStart={"4"} gridColumnEnd={"6"}>
+        {/* SCATTER AND REGRESSION PLOT ---------------------------------------------------------*/}
+        <Box gridRow={"1"} gridColumn={"5"}>
           <Card
             style={{
               width: "100%",
@@ -340,7 +342,7 @@ export default function TargetsPage() {
             </Flex>
             {/* <HtmlPlot /> */}
             <Flex
-              p={"7rem"}
+              p={"0rem"}
               // m={"10"}
               justify={"center"}
               align={"center"}
@@ -356,6 +358,40 @@ export default function TargetsPage() {
                   width={320}
                   height={200}
                   quality={100}
+                />
+              )}
+            </Flex>
+          </Card>
+        </Box>
+
+        {/* KDE DENSITY PLOT ---------------------------------------------------------*/}
+        <Box gridRow={"2"} gridColumnStart={"4"} gridColumnEnd={"6"}>
+          <Card
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            <Flex direction="row" gap="1" align="center" justify="center">
+              <Text size="4" weight="bold">
+                Диаграма на разсейване
+              </Text>
+            </Flex>
+            {/* <HtmlPlot /> */}
+            <Flex
+              p={"0rem"}
+              // m={"10"}
+              justify={"center"}
+              align={"center"}
+              width={"100%"}
+              height={"100%"}
+            >
+              {densityPngUrl && (
+                <Image
+                  // className="p-10"
+                  src={densityPngUrl}
+                  alt="Seaborn Plot"
+                  layout="responsive"
                 />
               )}
             </Flex>

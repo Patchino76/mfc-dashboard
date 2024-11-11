@@ -95,6 +95,12 @@ def get_image():
 
     return Response(content=buf.getvalue(), media_type="image/png")
 
+@app.get("/kde-densities", response_model=str)
+def get_kde_densities(tag, sp):
+    buf = trend.get_kde_densities(tag, sp)
+
+    return Response(content=buf.getvalue(), media_type="image/png")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("api_pulse:app", host="0.0.0.0", port=8000, reload=True)

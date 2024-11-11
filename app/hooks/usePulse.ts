@@ -92,3 +92,29 @@ export function usePulsePng(refreshInterval: number = 23) {
     networkMode: "always",
   });
 }
+
+export function usePulseDensityPng(
+  tag: string,
+  sp: number,
+  refreshInterval: number = 23
+) {
+  return useQuery({
+    queryKey: ["png-kde-density"],
+    queryFn: async () => {
+      const response = await axios.get(
+        "http://localhost:8000/kde-densities",
+
+        {
+          params: { tag, sp },
+          responseType: "blob",
+        }
+      );
+      const imageUrl = URL.createObjectURL(response.data);
+      return imageUrl;
+    },
+
+    staleTime: 0,
+    refetchInterval: refreshInterval * 1000,
+    networkMode: "always",
+  });
+}

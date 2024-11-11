@@ -1,8 +1,8 @@
 #%%
+
 from sqlalchemy import create_engine
 import pandas as pd
 
-#%%
 class PulseData:
 
     def __init__(self):
@@ -10,9 +10,9 @@ class PulseData:
         database = 'pulse'
         username = 'Pulse_RO'
         password = 'PD@T@r3@der'
-        connection_string = f"mssql+pyodbc://{username}:{password}@{server}:1433/{database}?driver=ODBC+Driver+17+for+SQL+Server"
+        connection_string = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}"
 
-        self.engine = create_engine(connection_string)
+        self.engine = create_engine("mssql+pyodbc:///?odbc_connect=" + connection_string)
         self.df = pd.DataFrame()
 
     def fetch_data(self, query: str):
@@ -21,7 +21,7 @@ class PulseData:
 
 # Example usage
 pulse_data = PulseData()
-pulse_data.fetch_data("select top 10 * from LoggerValues")
+pulse_data.fetch_data("SELECT TOP 10 * FROM LoggerValues")
 print(pulse_data.df.head())
 
 # %%
