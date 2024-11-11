@@ -1,11 +1,11 @@
+import datetime
 from fastapi import Depends, FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Any, List, Dict
 from sim_trend import SimulateTrend
 from pulse_data_funcs import PulseData
-from pydantic import BaseModel, Field   
-from pydantic import BaseModel, Field   
-from datetime import datetime as dt
+from pydantic import BaseModel, Field
+from datetime import datetime
 
 app = FastAPI()
 origins = ["http://localhost:3000", "https://localhost:3000"]
@@ -24,13 +24,15 @@ trend = PulseData()
 class QueryParams(BaseModel):
     tags: str = Field(..., description="The tags to filter data by")
     # tags: List[str] = Field(..., description="The tags to filter data by")
-    start: dt = Field(None, description="The start date of the data range")
-    end: dt = Field(None, description="The end date of the data range")
+    start: datetime = Field(None, description="The start date of the data range")
+    end: datetime = Field(None, description="The end date of the data range")
 
 
 class TagData(BaseModel):
     timestamp: str
     data: Dict[str, float]
+
+
 
 @app.options("/{path:path}")
 async def preflight_handler():
@@ -43,28 +45,6 @@ async def test_cors():
 @app.get("/")
 def read_root():
     return {"message": "Hello, World!"}
-#simulation
-@app.get("/trend2", response_model=List[float])
-def get_trend():
-    data = trend_sim.simulate_trend()
-    return data
-#simulation
-@app.get("/trend_pv_sp", response_model=Dict[str,List[float]])
-def get_trend_sp_pv():
-    data = trend_sim.simulate_pv_and_sp()
-    return data
-
-#pulse sql data
-@app.get("/pulse", response_model=List[List[float]])
-def get_data(params: QueryParams = Depends()):
-    try:
-        tags_list = params.tags.split(',')
-        tags_data = trend.get_data_by_tags(tags_list, params.num_records)
-        # tags_data = tags_data.tolist()
-        return tags_data
-    except Exception as e:
-        print(f"Error occurred: {e}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
     
 @app.get("/pulse-last", response_model=List[float])
 def get_last(tags: str):
@@ -72,13 +52,25 @@ def get_last(tags: str):
     return values
 
 
+def get_dataframe_params(
+    tags: str = Query(None, description="Comma-separated list of tags"),
+    start: datetime = Query(None, description="Start datetime"),
+    end: datetime = Query(None, description="End datetime")
+):
+    if tags is None:
+        tags = "RECOVERY_LINE1_CU_LONG,CUFLOTAS2-S7-400PV_CU_LINE_1,CUFLOTAS2-S7-400PV_FE_LINE1"
+    if start is None:
+        start = datetime.now() - timedelta(days=10)
+    if end is None:
+        end = datetime.now()
+    return {"tags": tags, "start": start, "end": end}
+
 @app.get("/pulse-ts", response_model=List[TagData])
-def get_data(params: QueryParams = Depends()):
+def get_data(params: dict = Depends(get_dataframe_params)):
+    tags_list = params["tags"].split(',')
+    tags_data = trend.get_data_by_tags(tags_list, params["start"], params["end"])
 
-    tags_list = params.tags.split(',')
-    tags_data = trend.get_data_by_tags(tags_list, params.start, params.end)
-
-    # convert to list of dicts
+    # Convert to list of dicts
     response_list = [{'timestamp': k, 'data': v} for k, v in tags_data.items()]
 
     return response_list

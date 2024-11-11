@@ -379,7 +379,7 @@ export default function TargetsPage() {
             </Flex>
             {/* <HtmlPlot /> */}
             <Flex
-              p={"0rem"}
+              p={"-2rem"}
               // m={"10"}
               justify={"center"}
               align={"center"}
@@ -392,8 +392,8 @@ export default function TargetsPage() {
                   src={densityPngUrl}
                   alt="Seaborn Plot"
                   layout="responsive"
-                  width={320}
-                  height={200}
+                  width={640}
+                  height={480}
                   quality={100}
                 />
               )}
