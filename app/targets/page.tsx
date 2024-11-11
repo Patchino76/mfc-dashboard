@@ -392,6 +392,9 @@ export default function TargetsPage() {
                   src={densityPngUrl}
                   alt="Seaborn Plot"
                   layout="responsive"
+                  width={320}
+                  height={200}
+                  quality={100}
                 />
               )}
             </Flex>
