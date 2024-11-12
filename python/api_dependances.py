@@ -10,6 +10,7 @@ import matplotlib
 import seaborn as sns
 from datetime import datetime as dt, timedelta
 from sqlalchemy import create_engine, text
+from data_utils import clean_array_outliers, clean_df_outliers
 
 matplotlib.use('Agg')
 pd.set_option('future.no_silent_downcasting', True)
@@ -18,15 +19,28 @@ class ApiDependancies(BaseModel):
     tags: Optional[str]  = None 
     start: Optional[str] = None
     end: Optional[str] = None
+    clean_array_outliers = staticmethod(clean_array_outliers)
+    clean_df_outliers = staticmethod(clean_df_outliers)
+    class Config:
+        arbitrary_types_allowed = True
     def __init__(self, **data):
         
         super().__init__(**data)
         self.tags = "RECOVERY_LINE1_CU_LONG,CUFLOTAS2-S7-400PV_CU_LINE_1,CUFLOTAS2-S7-400PV_FE_LINE1"
-        self.start = (datetime.datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d %H:%M:%S")
+        self.start = (datetime.datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
         self.end = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self._df = None
 
         print("start value after init:", self.start)
         print("end value after init:", self.end)
+    @property
+    def df(self):
+        if self._df is None:
+            self.fetch_data()
+        return self._df
+    @df.setter
+    def df(self, value):
+        self._df = value
         
 
     def sql_connect(self):
@@ -52,16 +66,18 @@ class ApiDependancies(BaseModel):
             df = df.drop_duplicates()
             df.set_index('timestamp', inplace=True)
             df.drop('IndexTime', axis=1, inplace=True)
+            
 
             tag_dict = {tag['id']: tag['name'] for tag in sql_tags}
             df_pivoted = df.pivot(columns='LoggerTagID', values='Value')
             df_pivoted.columns = [tag_dict[col] for col in df_pivoted.columns]
+            df_pivoted = clean_df_outliers(df_pivoted, threshold=4)
             df_pivoted = df_pivoted.resample('1h').mean()
             df_pivoted = df_pivoted.ffill().infer_objects(copy=False)
             df_pivoted = df_pivoted.iloc[::-1]  # reverse the dataframe
             df_pivoted.dropna(inplace=True, how='any')
-            print(df_pivoted)
-            
+            self.df = df_pivoted
+          
             return df_pivoted
         
     def fetch_last_records(self) -> List[float]:
@@ -78,15 +94,63 @@ class ApiDependancies(BaseModel):
                 result = connection.execute(query_str)
                 value = result.scalar()  # Fetch the first column of the first row
                 values.append(value)
-            print(values)
             return values
         
-    def get_reg_plot(self):
-        plt.figure(figsize=(8, 6))
-        plt.title('Empty Plot')
-        plt.xlabel('X-axis')
-        plt.ylabel('Y-axis')
-        plt.grid(True)
+    def get_reg_plot(self, tag1: str = "RECOVERY_LINE1_CU_LONG", tag2: str = "CUFLOTAS2-S7-400PV_CU_LINE_1") -> str:
+        if self.df is None:
+            self.fetch_data()
+        
+        descr1 = next((tag for tag in sql_tags if tag["name"] == tag1), None)["desc"]
+        descr2 = next((tag for tag in sql_tags if tag["name"] == tag2), None)["desc"]
+     
+        # fig, ax = plt.subplots(figure=(12, 8),  dpi=600)
+        plt.figure(figsize=(12, 8))
+        g= sns.jointplot(x=tag1, y=tag2, data=self.df, kind="reg", truncate=True, color="blue", height=7)
+        g.ax_joint.set_xlabel(descr1, fontsize=14)
+        g.ax_joint.set_ylabel(descr2, fontsize=14)
+        # plt.tight_layout()
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        plt.close()
+
+        return buf
+
+        
+    def get_kde_plot(self, tag: str = "RECOVERY_LINE1_CU_LONG", sp: float = 88.8) -> str:
+        if self.df is None:
+            self.fetch_data()
+        
+        sp = float(sp)
+        data =  self.df[tag].to_numpy()
+        # data = clean_array_outliers(data, threshold=4)
+        above = data[data > sp]
+        below = data[data <= sp]
+
+        x = np.linspace(data.min(), data.max(), 1000)
+        above = self.clean_array_outliers(above, threshold=4)
+        below = self.clean_array_outliers(below, threshold=4)
+        # Calculate means
+        mean_above = np.mean(above)
+        mean_below = np.mean(below)
+
+        # Calculate distances from the target value to the means
+        distance_above = mean_above - sp
+        distance_below = sp - mean_below
+
+        # # Plotting the densities
+        plt.figure(figsize=(12, 8))
+        sns.kdeplot(data=above, fill=True, color='skyblue', label='Над целта')
+        sns.kdeplot(data=below, fill=True, color='salmon', label='Под целта')
+        plt.axvline(sp, color='red', linestyle='--', label='Цел (SP)')
+        plt.axvline(mean_above, color='blue', linestyle='--', label='Средно над SP', ymax=0.9)
+        plt.axvline(mean_below, color='brown', linestyle='--', label='Средно под SP', ymax=0.9)
+        plt.title('Разпределения на извличането под и над целта')
+        plt.xlabel('Извличане', fontsize=14)
+        plt.ylabel('Плътност', fontsize=14)
+        plt.legend(fontsize=14)
+
         buf = io.BytesIO()
         plt.savefig(buf, format='png')
         buf.seek(0)

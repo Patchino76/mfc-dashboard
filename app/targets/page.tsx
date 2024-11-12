@@ -2,8 +2,8 @@
 import { Card, Flex, Box, Text, Grid } from "@radix-ui/themes";
 import {
   useLastRecords,
-  usePulseDensityPng,
-  usePulsePng,
+  usePulseKde,
+  usePulseReg,
   usePulseTrendwithTS,
 } from "../hooks/usePulse";
 import Image from "next/image";
@@ -46,9 +46,11 @@ export default function TargetsPage() {
     30
   );
   const { data: lastRecs } = useLastRecords(tags, 20);
-  const { data: imageUrl, isLoading, error } = usePulsePng();
-  const { data: densityPngUrl, isLoading: isLoadingDensityPng } =
-    usePulseDensityPng("RECOVERY_LINE1_CU_LONG", 87);
+  const { data: regUrl, isLoading, error } = usePulseReg();
+  const { data: kdeUrl, isLoading: isLoadingDensityPng } = usePulseKde(
+    "RECOVERY_LINE1_CU_LONG",
+    87
+  );
   const { setPoint } = useSetPoint();
 
   const [googleChart, setGoogleChart] = useState<GoogleChartData>();
@@ -349,10 +351,10 @@ export default function TargetsPage() {
               width={"100%"}
               height={"100%"}
             >
-              {imageUrl && (
+              {regUrl && (
                 <Image
                   // className="p-10"
-                  src={imageUrl}
+                  src={regUrl}
                   alt="Seaborn Plot"
                   layout="responsive"
                   width={320}
@@ -374,7 +376,7 @@ export default function TargetsPage() {
           >
             <Flex direction="row" gap="1" align="center" justify="center">
               <Text size="4" weight="bold">
-                Диаграма на разсейване
+                Разпределения на извличането под и над целта (SP)
               </Text>
             </Flex>
             {/* <HtmlPlot /> */}
@@ -386,10 +388,10 @@ export default function TargetsPage() {
               width={"100%"}
               height={"100%"}
             >
-              {densityPngUrl && (
+              {kdeUrl && (
                 <Image
                   // className="p-10"
-                  src={densityPngUrl}
+                  src={kdeUrl}
                   alt="Seaborn Plot"
                   layout="responsive"
                   width={640}

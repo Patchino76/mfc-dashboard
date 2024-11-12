@@ -159,14 +159,14 @@ class PulseData:
         tag1 = 'RECOVERY_LINE1_CU_LONG'
         tag2 = 'CUFLOTAS2-S7-400PV_CU_LINE_1'
         # tag2 = 'CUFLOTAS2-S7-400PV_FE_LINE1'
-        desc1 = next((tag for tag in sql_tags if tag["name"] == tag1), None)["desc"]
-        desc2 = next((tag for tag in sql_tags if tag["name"] == tag2), None)["desc"]
+        descr1 = next((tag for tag in sql_tags if tag["name"] == tag1), None)["desc"]
+        descr2 = next((tag for tag in sql_tags if tag["name"] == tag2), None)["desc"]
      
         self.fig, self.ax = plt.subplots(figure=(8, 8),  dpi=600)
         g= sns.jointplot(x=tag1, y=tag2, data=self.df, kind="reg", truncate=True, color="blue", height=7)
         # sns.regplot(self.df, x=tag1, y=tag2, ax=self.ax)
-        g.ax_joint.set_xlabel(desc1, fontsize=14)
-        g.ax_joint.set_ylabel(desc2, fontsize=14)
+        g.ax_joint.set_xlabel(descr1, fontsize=14)
+        g.ax_joint.set_ylabel(descr2, fontsize=14)
 
         plt.tight_layout()
 

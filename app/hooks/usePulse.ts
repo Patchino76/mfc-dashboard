@@ -71,12 +71,12 @@ export function usePulseTrendwithTS(
   });
 }
 
-export function usePulsePng(refreshInterval: number = 23) {
+export function usePulseReg(refreshInterval: number = 23) {
   return useQuery({
     queryKey: ["png-image"],
     queryFn: async () => {
       const response = await axios.get(
-        "http://localhost:8000/image",
+        "http://localhost:8000/reg",
 
         {
           // params: { tags: tags.join(","), start, end },
@@ -93,7 +93,7 @@ export function usePulsePng(refreshInterval: number = 23) {
   });
 }
 
-export function usePulseDensityPng(
+export function usePulseKde(
   tag: string,
   sp: number,
   refreshInterval: number = 23
@@ -102,7 +102,7 @@ export function usePulseDensityPng(
     queryKey: ["png-kde-density"],
     queryFn: async () => {
       const response = await axios.get(
-        "http://localhost:8000/kde-densities",
+        "http://localhost:8000/kde",
 
         {
           params: { tag, sp },
