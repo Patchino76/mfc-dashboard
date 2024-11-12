@@ -52,7 +52,8 @@ def get_data(commons: ApiDependancies = Depends()):
 
 
 @app.get("/reg", response_model=str)
-def get_image(commons: ApiDependancies = Depends()):
+# def get_image(commons: ApiDependancies = Depends()):
+def get_reg_plot(commons: ApiDependancies = Depends()):
     buf = commons.get_reg_plot()
     return Response(content=buf.getvalue(), media_type="image/png")
 

@@ -27,12 +27,23 @@ class ApiDependancies(BaseModel):
         
         super().__init__(**data)
         self.tags = "RECOVERY_LINE1_CU_LONG,CUFLOTAS2-S7-400PV_CU_LINE_1,CUFLOTAS2-S7-400PV_FE_LINE1"
-        self.start = (datetime.datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
+        self.start = (datetime.datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d %H:%M:%S")
         self.end = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self._df = None
 
         print("start value after init:", self.start)
         print("end value after init:", self.end)
+    # def __init__(self, **data):
+    #     super().__init__(**data)
+    #     self._df = None
+
+    def __call__(self, tags: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None):
+        self.tags = tags or "RECOVERY_LINE1_CU_LONG,CUFLOTAS2-S7-400PV_CU_LINE_1,CUFLOTAS2-S7-400PV_FE_LINE1"
+        self.start = start or (datetime.datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
+        self.end = end or datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print("start value after call:", self.start)
+        print("end value after call:", self.end)
+        return self
     @property
     def df(self):
         if self._df is None:
