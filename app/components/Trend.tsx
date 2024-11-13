@@ -18,8 +18,8 @@ const Trend = ({ data }: { data: GoogleChartData }) => {
     },
     vAxis: {
       title: "%",
-      minValue: 85,
-      maxValue: 95,
+      minValue: 84,
+      maxValue: 92,
       gridlines: { color: "#ccc", count: 5 },
     },
     chartArea: { width: "85%", height: "70%", top: "5%" },

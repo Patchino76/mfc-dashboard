@@ -30,6 +30,12 @@ export default function TargetsPage() {
     "CUFLOTAS2-S7-400PV_CU_LINE_1",
     "CUFLOTAS2-S7-400PV_FE_LINE1",
   ];
+
+  const tags_regression = [
+    "RECOVERY_LINE1_CU_LONG",
+    "CUFLOTAS2-S7-400PV_CU_LINE_1",
+  ];
+  const tag_kde = "RECOVERY_LINE1_CU_LONG";
   // const start = new Date("2024-11-01 00:06:00").toISOString();
   const start8h = getDateWithLessHours(8, new Date());
   const currentDate = new Date();
@@ -39,6 +45,7 @@ export default function TargetsPage() {
   const [pv, setPV] = useState<number>();
   const [start, setStart] = useState<string>(pastDate.toISOString());
   const [end, setEnd] = useState<string>(currentDate.toISOString());
+  const { setPoint } = useSetPoint();
 
   //HOOKS------------------------------------------------------------------
   const { data: rawData, isLoading: isLoadingRaw } = usePulseTrendwithTS(
@@ -46,12 +53,16 @@ export default function TargetsPage() {
     30
   );
   const { data: lastRecs } = useLastRecords(tags, 20);
-  const { data: regUrl, isLoading, error } = usePulseReg();
+  const {
+    data: regUrl,
+    isLoading,
+    error,
+  } = usePulseReg({ tags_regression, start, end }, 10);
   const { data: kdeUrl, isLoading: isLoadingDensityPng } = usePulseKde(
-    "RECOVERY_LINE1_CU_LONG",
-    87
+    { tag_kde, start, end },
+    setPoint,
+    2
   );
-  const { setPoint } = useSetPoint();
 
   const [googleChart, setGoogleChart] = useState<GoogleChartData>();
   const [googleTable, setGoogleTable] = useState<GoogleChartData>();
@@ -106,7 +117,7 @@ export default function TargetsPage() {
       const pv = value; // Subtract value from given number
       return { hour, pv };
     });
-    // console.log("bar", result);
+    console.log("bar...", rawData);
     return result;
   };
   const makeGoogleGauge = (header: string[], value: number, unit: string) => {
@@ -138,7 +149,7 @@ export default function TargetsPage() {
     const barchart2 = makeRechartChart(["CUFLOTAS2-S7-400PV_FE_LINE1"]);
     setBarChartSm2(barchart2);
 
-    // console.log("2", barchart2);
+    console.log("2", barchart2);
   }, [rawData, setPoint, start]);
 
   useEffect(() => {
@@ -173,13 +184,6 @@ export default function TargetsPage() {
         p={"1"}
         // style={{ border: "1px solid black" }}
       >
-        {/* <div style={{ border: "1px solid red" }}>Item 1</div>
-      <div style={{ border: "1px solid red" }}>Item 2</div>
-      <div style={{ border: "1px solid red" }}>Item 3</div>
-      <div style={{ border: "1px solid red" }}>Item 4</div>
-      <div style={{ border: "1px solid red" }}>Item 5</div>
-      <div style={{ border: "1px solid red" }}>Item 6</div> */}
-
         {/* LINEAR GAUGE WIH TARGET */}
         <Box gridColumnStart={"1"} gridRow={"1"}>
           <LinearGaugeWithTargetAndSpAdjuster
@@ -299,7 +303,7 @@ export default function TargetsPage() {
               </Box>
 
               <Box mt={"0.5rem"}>
-                <BarChartRechartSm chartData={barChartSm2!} min={1.8} max={2} />
+                <BarChartRechartSm chartData={barChartSm2!} min={1.6} max={2} />
               </Box>
             </Flex>
           </Card>

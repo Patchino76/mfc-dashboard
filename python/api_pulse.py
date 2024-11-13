@@ -15,21 +15,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# trend = PulseData()
-
-# class QueryParams(BaseModel):
-#     tags: str = Field(..., description="The tags to filter data by")
-#     # tags: List[str] = Field(..., description="The tags to filter data by")
-#     start: datetime = Field(None, description="The start date of the data range")
-#     end: datetime = Field(None, description="The end date of the data range")
-
-# class QueryParams2(BaseModel):
-#     tags: str = "RECOVERY_LINE1_CU_LONG,CUFLOTAS2-S7-400PV_CU_LINE_1,CUFLOTAS2-S7-400PV_FE_LINE1"
-#     start: datetime = datetime.now() - timedelta(days=10)
-#     end: datetime = datetime.now()
-
-
 class TagData(BaseModel):
     timestamp: str
     data: Dict[str, float]
@@ -41,9 +26,8 @@ def get_last(commons: ApiDependancies = Depends()):
 
 @app.get("/pulse-ts", response_model=List[TagData])
 def get_data(commons: ApiDependancies = Depends()):
-    print("commons", commons.tags, commons.start, commons.end)
+    # print("endpoint ts called with commons", commons)
     df = commons.fetch_data()
-    df = df.iloc[::-1]  # reverse the dataframe
     df_to_dict = {index.strftime("%Y-%m-%d %H:%M"): row.to_dict() for index, row in df.iterrows()}
 
     # Convert to list of dicts
@@ -51,17 +35,18 @@ def get_data(commons: ApiDependancies = Depends()):
     return response_list
 
 
-@app.get("/reg", response_model=str)
-# def get_image(commons: ApiDependancies = Depends()):
-def get_reg_plot(commons: ApiDependancies = Depends()):
-    buf = commons.get_reg_plot()
+@app.get("/reg", response_model=str)              #here tags must have only 2 tags
+def get_reg_plot(commons: ApiDependancies = Depends()): 
+    # print("endpoint reg called with commons", commons)
+    tags = commons.tags.split(",")
+    tag1, tag2 = tags
+    buf = commons.get_reg_plot(tag1, tag2)
     return Response(content=buf.getvalue(), media_type="image/png")
 
-    return Response(content=buf.getvalue(), media_type="image/png")
-
-@app.get("/kde", response_model=str)
-def get_kde_densities(commons: ApiDependancies = Depends(), sp: float = 88.5):
-    buf = commons.get_kde_plot()
+@app.get("/kde", response_model=str)               # here tags must have only 1 tag
+def get_kde_densities(commons: ApiDependancies = Depends()):
+    print("endpoint kde called with commons", commons)
+    buf = commons.get_kde_plot(commons.tags, commons.sp)
 
     return Response(content=buf.getvalue(), media_type="image/png")
 
