@@ -10,12 +10,14 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import Trend from "../components/Trend";
 import RadialGoogleGauge from "../components/RadialGoogleGauge";
+<<<<<<< HEAD
+=======
+import LinearGaugeWithTargetAndSpAdjuster2 from "../components/LinearGaugeWithTargetAndSpAdjuster2";
+>>>>>>> parent of 33c15b0 (finished integration of zustand store for the sp of targets)
 import MyMonthPicker from "../components/MyMonthPicker";
 import { getDateWithLessHours } from "../utils/dateUtils";
 import { BarChartRechartSm } from "../components/BarChartRechartSm";
 import TableChart from "../components/TableChart";
-import LinearGaugeWithTargetAndSpAdjuster from "../components/LinearGaugeWithTargetAndSpAdjuster";
-import useSetPoint from "../hooks/store";
 
 export type ChartRow = (string | number)[];
 export type GoogleChartData = [string[], ...ChartRow[]];
@@ -32,8 +34,17 @@ export default function TargetsPage() {
   ];
   // const start = new Date("2024-11-01 00:06:00").toISOString();
   const start8h = getDateWithLessHours(8, new Date());
+<<<<<<< HEAD
   const currentDate = new Date();
   const pastDate = new Date(currentDate.setDate(currentDate.getDate() - 10));
+=======
+  const end = new Date().toISOString();
+
+  //HOOKS------------------------------------------------------------------
+  const { data: rawData } = usePulseTrendwithTS({ tags, start, end }, 30);
+  const { data: lastRecs } = useLastRecords(tags, 20);
+  const { data: imageUrl, isLoading, error } = usePulsePng();
+>>>>>>> parent of 33c15b0 (finished integration of zustand store for the sp of targets)
 
   //STATES----------------------------------------------------------------
   const [pv, setPV] = useState<number>();
@@ -88,7 +99,7 @@ export default function TargetsPage() {
       const timestamp = row[0] as string; // Type assertion to string
       const value = row[1] as number; // Type assertion to number
       const time = timestamp.split(" ")[1]; // Extract hh
-      const newValue = setPoint - value; // Subtract value from given number
+      const newValue = sp! - value; // Subtract value from given number
       return [time, newValue];
     });
     const table: GoogleChartData = [header, ...result];
@@ -120,7 +131,7 @@ export default function TargetsPage() {
     const trend = makeGoogleTrend(
       ["Timestamp", "Value", "SP"],
       ["RECOVERY_LINE1_CU_LONG"],
-      setPoint
+      88
     );
     setGoogleChart(trend as GoogleChartData);
 
@@ -137,7 +148,11 @@ export default function TargetsPage() {
     setBarChartSm2(barchart2);
 
     // console.log("2", barchart2);
+<<<<<<< HEAD
   }, [rawData, setPoint, start]);
+=======
+  }, [rawData]);
+>>>>>>> parent of 33c15b0 (finished integration of zustand store for the sp of targets)
 
   useEffect(() => {
     if (lastRecs) {
@@ -178,6 +193,7 @@ export default function TargetsPage() {
       <div style={{ border: "1px solid red" }}>Item 5</div>
       <div style={{ border: "1px solid red" }}>Item 6</div> */}
 
+<<<<<<< HEAD
         {/* LINEAR GAUGE WIH TARGET */}
         <Box gridColumnStart={"1"} gridRow={"1"}>
           <LinearGaugeWithTargetAndSpAdjuster
@@ -194,6 +210,38 @@ export default function TargetsPage() {
               width: "100%",
               height: "100%",
             }}
+=======
+      {/* LINEAR GAUGE WIH TARGET */}
+      <Box gridColumnStart={"1"} gridRow={"1"}>
+        <LinearGaugeWithTargetAndSpAdjuster2
+          title="Извличане ред 1"
+          description="Реализация на извличането на ред 1."
+          target={90}
+          actual={pv} //pv
+        />
+      </Box>
+      {/* TABLE CHART ------------------------------------------------------*/}
+      <Box gridColumn={"2"} gridRow={"1"}>
+        <Card
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <Flex direction="column" align={"center"}>
+            <Text size="4" weight="bold">
+              Извличане по часове назад
+            </Text>
+            <Text as="p" size="2" color="gray">
+              разлика между задание и изпълнение [%]
+            </Text>
+          </Flex>
+          <Flex
+            direction={"column"}
+            justify={"center"}
+            align={"center"}
+            mt={"0.5rem"}
+>>>>>>> parent of 33c15b0 (finished integration of zustand store for the sp of targets)
           >
             <Flex direction="column" align={"center"}>
               <Text size="4" weight="bold">
