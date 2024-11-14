@@ -6,6 +6,16 @@ export interface qryProps {
   start: string;
   end: string;
 }
+export interface qryPropsReg {
+  tags_regression: string[];
+  start: string;
+  end: string;
+}
+export interface qryPropsKde {
+  tag_kde: string;
+  start: string;
+  end: string;
+}
 
 export interface responseProps {
   tag_id: number;
@@ -71,15 +81,19 @@ export function usePulseTrendwithTS(
   });
 }
 
-export function usePulsePng(refreshInterval: number = 23) {
+export function usePulseReg(
+  queryData: qryPropsReg,
+  refreshInterval: number = 23
+) {
   return useQuery({
     queryKey: ["png-image"],
     queryFn: async () => {
+      const { tags_regression, start, end } = queryData;
       const response = await axios.get(
-        "http://localhost:8000/image",
+        "http://localhost:8000/reg",
 
         {
-          // params: { tags: tags.join(","), start, end },
+          params: { tags: tags_regression.join(","), start, end },
           responseType: "blob",
         }
       );
@@ -93,19 +107,20 @@ export function usePulsePng(refreshInterval: number = 23) {
   });
 }
 
-export function usePulseDensityPng(
-  tag: string,
+export function usePulseKde(
+  queryData: qryPropsKde,
   sp: number,
   refreshInterval: number = 23
 ) {
   return useQuery({
     queryKey: ["png-kde-density"],
     queryFn: async () => {
+      const { tag_kde, start, end } = queryData;
       const response = await axios.get(
-        "http://localhost:8000/kde-densities",
+        "http://localhost:8000/kde",
 
         {
-          params: { tag, sp },
+          params: { tags: tag_kde, start, end, sp },
           responseType: "blob",
         }
       );
@@ -113,7 +128,7 @@ export function usePulseDensityPng(
       return imageUrl;
     },
 
-    staleTime: 0,
+    staleTime: 10,
     refetchInterval: refreshInterval * 1000,
     networkMode: "always",
   });

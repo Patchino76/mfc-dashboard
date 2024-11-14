@@ -2,8 +2,8 @@
 import { Card, Flex, Box, Text, Grid } from "@radix-ui/themes";
 import {
   useLastRecords,
-  usePulseDensityPng,
-  usePulsePng,
+  usePulseKde,
+  usePulseReg,
   usePulseTrendwithTS,
 } from "../hooks/usePulse";
 import Image from "next/image";
@@ -32,6 +32,12 @@ export default function TargetsPage() {
     "CUFLOTAS2-S7-400PV_CU_LINE_1",
     "CUFLOTAS2-S7-400PV_FE_LINE1",
   ];
+
+  const tags_regression = [
+    "RECOVERY_LINE1_CU_LONG",
+    "CUFLOTAS2-S7-400PV_CU_LINE_1",
+  ];
+  const tag_kde = "RECOVERY_LINE1_CU_LONG";
   // const start = new Date("2024-11-01 00:06:00").toISOString();
   const start8h = getDateWithLessHours(8, new Date());
 <<<<<<< HEAD
@@ -50,6 +56,7 @@ export default function TargetsPage() {
   const [pv, setPV] = useState<number>();
   const [start, setStart] = useState<string>(pastDate.toISOString());
   const [end, setEnd] = useState<string>(currentDate.toISOString());
+  const { setPoint } = useSetPoint();
 
   //HOOKS------------------------------------------------------------------
   const { data: rawData, isLoading: isLoadingRaw } = usePulseTrendwithTS(
@@ -57,10 +64,16 @@ export default function TargetsPage() {
     30
   );
   const { data: lastRecs } = useLastRecords(tags, 20);
-  const { data: imageUrl, isLoading, error } = usePulsePng();
-  const { data: densityPngUrl, isLoading: isLoadingDensityPng } =
-    usePulseDensityPng("RECOVERY_LINE1_CU_LONG", 87);
-  const { setPoint } = useSetPoint();
+  const {
+    data: regUrl,
+    isLoading,
+    error,
+  } = usePulseReg({ tags_regression, start, end }, 10);
+  const { data: kdeUrl, isLoading: isLoadingDensityPng } = usePulseKde(
+    { tag_kde, start, end },
+    setPoint,
+    2
+  );
 
   const [googleChart, setGoogleChart] = useState<GoogleChartData>();
   const [googleTable, setGoogleTable] = useState<GoogleChartData>();
@@ -115,7 +128,7 @@ export default function TargetsPage() {
       const pv = value; // Subtract value from given number
       return { hour, pv };
     });
-    // console.log("bar", result);
+    console.log("bar...", rawData);
     return result;
   };
   const makeGoogleGauge = (header: string[], value: number, unit: string) => {
@@ -147,8 +160,12 @@ export default function TargetsPage() {
     const barchart2 = makeRechartChart(["CUFLOTAS2-S7-400PV_FE_LINE1"]);
     setBarChartSm2(barchart2);
 
+<<<<<<< HEAD
     // console.log("2", barchart2);
 <<<<<<< HEAD
+=======
+    console.log("2", barchart2);
+>>>>>>> ca4c90c55944c6a45a9a69958f5bf43a72ae4210
   }, [rawData, setPoint, start]);
 =======
   }, [rawData]);
@@ -186,6 +203,7 @@ export default function TargetsPage() {
         p={"1"}
         // style={{ border: "1px solid black" }}
       >
+<<<<<<< HEAD
         {/* <div style={{ border: "1px solid red" }}>Item 1</div>
       <div style={{ border: "1px solid red" }}>Item 2</div>
       <div style={{ border: "1px solid red" }}>Item 3</div>
@@ -194,6 +212,8 @@ export default function TargetsPage() {
       <div style={{ border: "1px solid red" }}>Item 6</div> */}
 
 <<<<<<< HEAD
+=======
+>>>>>>> ca4c90c55944c6a45a9a69958f5bf43a72ae4210
         {/* LINEAR GAUGE WIH TARGET */}
         <Box gridColumnStart={"1"} gridRow={"1"}>
           <LinearGaugeWithTargetAndSpAdjuster
@@ -345,7 +365,7 @@ export default function TargetsPage() {
               </Box>
 
               <Box mt={"0.5rem"}>
-                <BarChartRechartSm chartData={barChartSm2!} min={1.8} max={2} />
+                <BarChartRechartSm chartData={barChartSm2!} min={1.6} max={2} />
               </Box>
             </Flex>
           </Card>
@@ -397,10 +417,10 @@ export default function TargetsPage() {
               width={"100%"}
               height={"100%"}
             >
-              {imageUrl && (
+              {regUrl && (
                 <Image
                   // className="p-10"
-                  src={imageUrl}
+                  src={regUrl}
                   alt="Seaborn Plot"
                   layout="responsive"
                   width={320}
@@ -422,24 +442,27 @@ export default function TargetsPage() {
           >
             <Flex direction="row" gap="1" align="center" justify="center">
               <Text size="4" weight="bold">
-                Диаграма на разсейване
+                Разпределения на извличането под и над целта (SP)
               </Text>
             </Flex>
             {/* <HtmlPlot /> */}
             <Flex
-              p={"0rem"}
+              p={"-2rem"}
               // m={"10"}
               justify={"center"}
               align={"center"}
               width={"100%"}
               height={"100%"}
             >
-              {densityPngUrl && (
+              {kdeUrl && (
                 <Image
                   // className="p-10"
-                  src={densityPngUrl}
+                  src={kdeUrl}
                   alt="Seaborn Plot"
                   layout="responsive"
+                  width={640}
+                  height={480}
+                  quality={100}
                 />
               )}
             </Flex>

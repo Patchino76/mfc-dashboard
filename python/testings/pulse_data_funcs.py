@@ -12,21 +12,21 @@ import mpld3
 from datetime import datetime as dt, timedelta
 import io
 from scipy.stats import gaussian_kde
+from sqlalchemy import create_engine
 
 matplotlib.use('Agg')
 pd.set_option('future.no_silent_downcasting', True)
 
 class PulseData:
-    # df = pd.DataFrame()
-    # fig = None
-    # ax = None
     def __init__(self):
         server = '10.20.2.10' 
         database = 'pulse' 
         username = 'Pulse_RO' 
         password = 'PD@T@r3@der' 
-        cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
-        self.cursor = cnxn.cursor()
+        # cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
+        # self.cursor = cnxn.cursor()
+        connection_string = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}"
+        self.engine = create_engine("mssql+pyodbc:///?odbc_connect=" + connection_string)
         self.df = pd.DataFrame()
         self.fig, self.ax = plt.subplots(figure=(2, 2))
 
@@ -34,18 +34,13 @@ class PulseData:
   
     def get_last_records(self, tags: str) -> List[float]:
         tag_names = [x.strip() for x in tags.split(',')]
-
         tag_ids = [next((tag["id"] for tag in sql_tags if tag["name"] == name), None) for name in tag_names]
         
-        values = []
-        for tag_id in tag_ids:
-            query_str = f"select top 1 Value from LoggerValues where LoggerTagID = {tag_id} ORDER BY IndexTime DESC"
-            self.cursor.execute(query_str)
-            rows = self.cursor.fetchall()
-
-            if rows:  # Check if rows is not empty
-                values.append(float(rows[0][0]))
-
+        query_str = f"select top 1 Value from LoggerValues where LoggerTagID IN ({', '.join(map(str, tag_ids))}) ORDER BY IndexTime DESC"
+        with self.engine.connect() as connection:
+                df = pd.read_sql(query_str, connection)
+                values = df.iloc[0].tolist()
+                 
         return values
 
     
@@ -91,41 +86,29 @@ class PulseData:
 
         tag_ids = [next((tag["id"] for tag in sql_tags if tag["name"] == name), None) for name in tag_names]
 
-        data = []
-        for tag_id in tag_ids:
-            query_str = f"SELECT  IndexTime, Value FROM LoggerValues WHERE LoggerTagID = {tag_id} \
+        # query_str = f"SELECT  IndexTime, Value FROM LoggerValues WHERE LoggerTagID = {tag_id} \
+        #         AND IndexTime BETWEEN '{start}' AND '{end}' ORDER BY IndexTime ASC"
+        query_str = f"SELECT IndexTime, Value FROM LoggerValues WHERE LoggerTagID IN ({', '.join(map(str, tag_ids))}) \
                 AND IndexTime BETWEEN '{start}' AND '{end}' ORDER BY IndexTime ASC"
-            self.cursor.execute(query_str)
-            rows = self.cursor.fetchall()
-            rows = [list(row) for row in rows]
+        print("QUERY: ", query_str)
 
-            corrected_rows = []
-            for row in rows:
-                index_time = row[0]
-                # Assuming the timestamp is 2 hours ahead
-                corrected_time = index_time + timedelta(hours=2)
-                corrected_rows.append([corrected_time, row[1]])
-
-            tag_name = next((tag["name"] for tag in sql_tags if tag["id"] == tag_id), None)
+            # tag_name = next((tag["name"] for tag in sql_tags if tag["id"] == tag_id), None)
            
-            data.append({"tagname": tag_name, "df": pd.DataFrame(corrected_rows, columns=['timestamp', 'value'])})
-
-        for item in data: #setting the dt index
-            item['df']['timestamp'] = pd.to_datetime(item['df']['timestamp'])
-            item['df'].set_index('timestamp', inplace=True)
-
-            # item["df"] = self.clean_df_outliers(df=item["df"])
-            item['df'] = item['df'].resample('1h').mean()
-
+        #     data.append({"tagname": tag_name, "df": pd.DataFrame(corrected_rows, columns=['timestamp', 'value'])})
+        with self.engine.connect() as connection:
+            df = pd.read_sql(query_str, connection)
+        
+        df['timestamp'] = pd.to_datetime(df['timestamp'])
+        df.set_index('timestamp', inplace=True)
+        df = df.resample('1h').mean()
+        df.columns = tag_names
 
         # Find the common indices in the dataframes and trim to the common ones
-        common_indices = data[0]['df'].index
-        for item in data[1:]:
-            common_indices = common_indices.intersection(item['df'].index)
-        for item in data:
-            item['df'] = item['df'].loc[common_indices]
-
-        df = pd.concat([item['df'].rename(columns={'value': item['tagname']}) for item in data], axis=1)
+        # common_indices = data[0]['df'].index
+        # for item in data[1:]:
+        #     common_indices = common_indices.intersection(item['df'].index)
+        # for item in data:
+        #     item['df'] = item['df'].loc[common_indices]
 
         
         df = df.ffill().infer_objects(copy=False)
@@ -176,14 +159,14 @@ class PulseData:
         tag1 = 'RECOVERY_LINE1_CU_LONG'
         tag2 = 'CUFLOTAS2-S7-400PV_CU_LINE_1'
         # tag2 = 'CUFLOTAS2-S7-400PV_FE_LINE1'
-        desc1 = next((tag for tag in sql_tags if tag["name"] == tag1), None)["desc"]
-        desc2 = next((tag for tag in sql_tags if tag["name"] == tag2), None)["desc"]
+        descr1 = next((tag for tag in sql_tags if tag["name"] == tag1), None)["desc"]
+        descr2 = next((tag for tag in sql_tags if tag["name"] == tag2), None)["desc"]
      
         self.fig, self.ax = plt.subplots(figure=(8, 8),  dpi=600)
         g= sns.jointplot(x=tag1, y=tag2, data=self.df, kind="reg", truncate=True, color="blue", height=7)
         # sns.regplot(self.df, x=tag1, y=tag2, ax=self.ax)
-        g.ax_joint.set_xlabel(desc1, fontsize=14)
-        g.ax_joint.set_ylabel(desc2, fontsize=14)
+        g.ax_joint.set_xlabel(descr1, fontsize=14)
+        g.ax_joint.set_ylabel(descr2, fontsize=14)
 
         plt.tight_layout()
 
