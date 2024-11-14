@@ -115,12 +115,13 @@ export default function TargetsPage() {
       const newValue = sp! - value; // Subtract value from given number
       return [time, newValue];
     });
+
     const table: GoogleChartData = [header, ...result];
     return table;
   };
 
   const makeRechartChart = (tags: string[]) => {
-    let rawArray = flattenData(rawData!, tags).slice(0, 8);
+    let rawArray = flattenData(rawData!, tags).slice(0, 8).reverse();
     const result = rawArray.map((row) => {
       const timestamp = row[0] as string; // Type assertion to string
       const value = row[1] as number; // Type assertion to number
@@ -128,7 +129,6 @@ export default function TargetsPage() {
       const pv = value; // Subtract value from given number
       return { hour, pv };
     });
-    console.log("bar...", rawData);
     return result;
   };
   const makeGoogleGauge = (header: string[], value: number, unit: string) => {
@@ -156,16 +156,9 @@ export default function TargetsPage() {
 
     const barchart1 = makeRechartChart(["CUFLOTAS2-S7-400PV_CU_LINE_1"]);
     setBarChartSm1(barchart1);
-    // console.log("1", barchart1);
+
     const barchart2 = makeRechartChart(["CUFLOTAS2-S7-400PV_FE_LINE1"]);
     setBarChartSm2(barchart2);
-
-<<<<<<< HEAD
-    // console.log("2", barchart2);
-<<<<<<< HEAD
-=======
-    console.log("2", barchart2);
->>>>>>> ca4c90c55944c6a45a9a69958f5bf43a72ae4210
   }, [rawData, setPoint, start]);
 =======
   }, [rawData]);
@@ -422,7 +415,6 @@ export default function TargetsPage() {
                   // className="p-10"
                   src={regUrl}
                   alt="Seaborn Plot"
-                  layout="responsive"
                   width={320}
                   height={200}
                   quality={100}
@@ -447,7 +439,7 @@ export default function TargetsPage() {
             </Flex>
             {/* <HtmlPlot /> */}
             <Flex
-              p={"-2rem"}
+              p={"0rem"}
               // m={"10"}
               justify={"center"}
               align={"center"}
@@ -459,9 +451,8 @@ export default function TargetsPage() {
                   // className="p-10"
                   src={kdeUrl}
                   alt="Seaborn Plot"
-                  layout="responsive"
-                  width={640}
-                  height={480}
+                  width={1200}
+                  height={768}
                   quality={100}
                 />
               )}
