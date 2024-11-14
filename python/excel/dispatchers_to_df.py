@@ -89,6 +89,7 @@ column_names = [
 ]
 df.columns = column_names
 df.to_sql('dispatchers', con=sqlite3.connect('dispatchers.db'), if_exists='replace', index=False)
+df.to_csv('dispatchers_en.csv', index=True)
 
 
 # %%
