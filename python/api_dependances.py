@@ -68,7 +68,7 @@ class ApiDependancies(BaseModel):
             df_pivoted = df.pivot(columns='LoggerTagID', values='Value')
             df_pivoted.columns = [tag_dict[col] for col in df_pivoted.columns]
             # df_pivoted = clean_df_outliers_percentiles(df_pivoted, lower_percentile=0.2, upper_percentile=0.8)
-            df_pivoted = clean_df_outliers(df_pivoted, threshold=3)
+            df_pivoted = clean_df_outliers(df_pivoted, threshold=2)
             df_pivoted = df_pivoted.resample('1h').mean()
             df_pivoted = df_pivoted.ffill().infer_objects(copy=False)
             df_pivoted = df_pivoted.iloc[::-1]  # reverse the dataframe

@@ -1,5 +1,6 @@
 #%%
 import pandas as pd
+import sqlite3
 # %%
 file_path = 'Doklad_Dispecheri_2022_.xlsx'
 
@@ -56,4 +57,38 @@ corr_matrix = df.corr()
 plt.figure(figsize=(25, 25))
 sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='viridis')
 plt.show()
+# %%
+
+column_names = [
+    "DailyOreInput",
+    "Stock2Status",
+    "CrushedOreSST",
+    "Class15",
+    "Class12",
+    "TransportedOre",
+    "IntermediateBunkerStatus",
+    "ProcessedOreMFC",
+    "OreMoisture",
+    "DryProcessedOre",
+    "Granite",
+    "Dikes",
+    "Shale",
+    "GrindingClassPlus0_20mm",
+    "GrindingClassMinus0_08mm",
+    "PulpDensity",
+    "CopperContentOre",
+    "CopperContentWaste",
+    "CopperContentConcentrate",
+    "TechExtraction",
+    "LoadExtraction",
+    "CopperConcentrate",
+    "ConcentrateMoisture",
+    "CopperContent",
+    "MetalCopper",
+    "ThickenerWeight"
+]
+df.columns = column_names
+df.to_sql('dispatchers', con=sqlite3.connect('dispatchers.db'), if_exists='replace', index=False)
+
+
 # %%

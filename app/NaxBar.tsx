@@ -7,7 +7,6 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import MyMonthPicker from "./components/MyMonthPicker";
 
 export function Navbar() {
   // const handleMonthSelect = (year: number, month: number) => {
@@ -42,6 +41,9 @@ export function Navbar() {
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
+        <div className="ml-auto flex items-center space-x-4">
+          <h1 className="font-bold">ДАННИ ЗА МЕДНА ФЛОТАЦИЯ - РЕД 1</h1>
+        </div>
         <div className="ml-auto flex items-center space-x-4">
           {/* <MyMonthPicker onSelect={handleMonthSelect} /> */}
           <Button variant="outline">Sign In</Button>
