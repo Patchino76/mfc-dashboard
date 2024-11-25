@@ -1,5 +1,4 @@
 "use client";
-import React, { useEffect } from "react";
 import {
   Bar,
   BarChart,
@@ -9,30 +8,19 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
 import { SetpointAdjuster } from "./SetpointAdjuster";
+import { Card, Flex, Text } from "@radix-ui/themes";
+import { useState } from "react";
 
-const LinearGaugeWithTargetAndSpAdjuster = ({
+const LinearGaugeWithTargetAndSpAdjuster2 = ({
   title = "....",
   description = "....",
-  actual = 95.1,
+  actual = 95.0,
   target = 60,
-<<<<<<< HEAD
-  min = 40,
-  max = 100,
-  sp_step = 0.1,
-=======
-  min = 80,
+  min = 85,
   max = 95,
->>>>>>> ca4c90c55944c6a45a9a69958f5bf43a72ae4210
+  sp_step = 0.1,
   unit = "%",
 }: {
   title?: string;
@@ -45,7 +33,10 @@ const LinearGaugeWithTargetAndSpAdjuster = ({
   unit?: string;
 }) => {
   const data = [{ name: "Actual", value: actual.toFixed(1) }];
-  const [spValue, setSpValue] = React.useState(target);
+  const [spValue, setSpValue] = useState(target);
+
+  // console.log(data);
+  // console.log(spValue);
 
   return (
     <Card
@@ -54,13 +45,16 @@ const LinearGaugeWithTargetAndSpAdjuster = ({
         height: "100%",
       }}
     >
-      <CardHeader>
-        <CardTitle className="flex justify-center">{title}</CardTitle>
-        <CardDescription className="flex justify-center">
-          {description}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+      <Flex direction="column" gap="1" align={"center"}>
+        <Text size="4" weight="bold">
+          Извличане
+        </Text>
+        {/* <Text as="p" size="2" color="gray">
+          моментна стойност [%]
+        </Text> */}
+      </Flex>
+
+      <Flex gap="1" align={"center"} height={"260px"}>
         <ChartContainer
           config={{
             value: {
@@ -119,8 +113,9 @@ const LinearGaugeWithTargetAndSpAdjuster = ({
             </Bar>
           </BarChart>
         </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex justify-center">
+      </Flex>
+
+      <Flex direction="column" gap="1" align={"center"}>
         <SetpointAdjuster
           value={spValue}
           onChange={setSpValue}
@@ -129,9 +124,9 @@ const LinearGaugeWithTargetAndSpAdjuster = ({
           max={max}
           unit={unit}
         />
-      </CardFooter>
+      </Flex>
     </Card>
   );
 };
 
-export default LinearGaugeWithTargetAndSpAdjuster;
+export default LinearGaugeWithTargetAndSpAdjuster2;
