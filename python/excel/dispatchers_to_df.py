@@ -2,12 +2,13 @@
 import pandas as pd
 import sqlite3
 # %%
-file_path = 'Doklad_Dispecheri_2022_.xlsx'
+file_path = 'Doklad_Dispecheri_2019.xlsx'
 
 
 xls = pd.ExcelFile(file_path)
 # %%
-columns_of_interest = ['D', 'E', 'F', 'E','F','G', 'H','I','J','K','L','M','N','P','R','T','V','X','Z', 'AC','AE', 'AG', 'AH', 'AI', 'AJ','AK', 'AL','AM']
+columns_of_interest22 = ['D', 'E', 'F', 'F','G', 'H','I','J','K','L','M','N','P','R','T','V','X','Z', 'AC','AE', 'AG', 'AH', 'AI', 'AJ','AK', 'AL','AM']
+columns_of_interest19 = ['D', 'E', 'F', 'F','G', 'H','I','J','K','L','M','N','O','Q','S','U','W','Y','AB', 'AD','AE', 'AG', 'AH', 'AI', 'AJ','AK', 'AL','AM']
 # Convert column letters to column indices (0-based)
 # column_indices = [ord(col) - ord('A') for col in columns_of_interest]
 def excel_col_to_index(col):
@@ -16,7 +17,7 @@ def excel_col_to_index(col):
         index = index * 26 + (ord(char.upper()) - ord('A')) + 1
     return index - 1
 
-column_indices = [excel_col_to_index(col) for col in columns_of_interest]
+column_indices = [excel_col_to_index(col) for col in columns_of_interest22]
 # Read the Excel file
 xls = pd.ExcelFile(file_path)
 
@@ -45,7 +46,7 @@ df.reset_index(drop=True, inplace=True)
 # df = df.drop(indices_to_drop)
 # df.reset_index(drop=True, inplace=True)
 print(df)
-df.to_csv('dispatchers.csv', index=True)
+df.to_csv('dispatchers19.csv', index=True)
 # %%
 
 import seaborn as sns
@@ -89,7 +90,6 @@ column_names = [
 ]
 df.columns = column_names
 df.to_sql('dispatchers', con=sqlite3.connect('dispatchers.db'), if_exists='replace', index=False)
-df.to_csv('dispatchers_en.csv', index=True)
 
 
 # %%
