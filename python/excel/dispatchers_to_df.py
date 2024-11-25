@@ -17,7 +17,7 @@ def excel_col_to_index(col):
         index = index * 26 + (ord(char.upper()) - ord('A')) + 1
     return index - 1
 
-column_indices = [excel_col_to_index(col) for col in columns_of_interest]
+column_indices = [excel_col_to_index(col) for col in columns_of_interest22]
 # Read the Excel file
 xls = pd.ExcelFile(file_path)
 
