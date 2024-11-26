@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 // Define the schema using Zod
 const formSchema = z.object({
   DailyOreInput: z.number().min(0),
-  Stock2Status: z.string(),
+  Stock2Status: z.number().min(0),
   CrushedOreSST: z.number().min(0),
   Class15: z.number().min(0),
   Class12: z.number().min(0),
   TransportedOre: z.number().min(0),
-  IntermediateBunkerStatus: z.string(),
+  IntermediateBunkerStatus: z.number().min(0),
   ProcessedOreMFC: z.number().min(0),
   OreMoisture: z.number().min(0).max(100),
   DryProcessedOre: z.number().min(0),
@@ -24,8 +24,8 @@ const formSchema = z.object({
   CopperContentOre: z.number().min(0).max(100),
   CopperContentWaste: z.number().min(0).max(100),
   CopperContentConcentrate: z.number().min(0).max(100),
-  TechExtraction: z.string(),
-  LoadExtraction: z.string(),
+  TechExtraction: z.number().min(0).max(100),
+  LoadExtraction: z.number().min(0).max(100),
   CopperConcentrate: z.number().min(0),
   ConcentrateMoisture: z.number().min(0).max(100),
   CopperContent: z.number().min(0).max(100),
@@ -91,35 +91,65 @@ const columnNames = [
 const FormComponent: React.FC = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      DailyOreInput: undefined,
-      Stock2Status: "",
-      CrushedOreSST: undefined,
-      Class15: undefined,
-      Class12: undefined,
-      TransportedOre: undefined,
-      IntermediateBunkerStatus: "",
-      ProcessedOreMFC: undefined,
-      OreMoisture: undefined,
-      DryProcessedOre: undefined,
-      Granite: undefined,
-      Dikes: undefined,
-      Shale: undefined,
-      GrindingClassPlus0_20mm: undefined,
-      GrindingClassMinus0_08mm: undefined,
-      PulpDensity: undefined,
-      CopperContentOre: undefined,
-      CopperContentWaste: undefined,
-      CopperContentConcentrate: undefined,
-      TechExtraction: "",
-      LoadExtraction: "",
-      CopperConcentrate: undefined,
-      ConcentrateMoisture: undefined,
-      CopperContent: undefined,
-      MetalCopper: undefined,
-      ThickenerWeight: undefined,
-    },
   });
+
+  //   const handlePaste = () => {
+  //     navigator.clipboard.readText().then((clipboardData) => {
+  //       const rows = clipboardData.split("\n");
+
+  //       const newFormData: Partial<FormValues> = {};
+  //       rows.forEach((row) => {
+  //         const cells = row.split("\t");
+  //         cells.forEach((cell, index) => {
+  //           if (index < columnNames.length) {
+  //             const fieldName = columnNames[index].en as keyof FormValues;
+  //             newFormData[fieldName] = !isNaN(parseFloat(cell))
+  //               ? parseFloat(cell)
+  //               : 0;
+  //           }
+  //         });
+  //       });
+
+  //       form.reset(newFormData);
+  //     });
+  //   };
+  const handlePaste = () => {
+    navigator.clipboard.readText().then((clipboardData) => {
+      console.log("Clipboard Data:", clipboardData);
+      const rows = clipboardData.split("\n");
+
+      const newFormData: Partial<FormValues> = {};
+      rows.forEach((row) => {
+        const cells = row.split("\t");
+        console.log("Cells:", cells);
+        console.log("First Cell Value:", cells[0]); // Log first cell specifically
+
+        cells.forEach((cell, index) => {
+          if (index < columnNames.length) {
+            const fieldName = columnNames[index].en as keyof FormValues;
+            const parsedValue = parseFloat(cell.trim()); // Trim whitespace
+
+            console.log(`Field: ${fieldName}, Parsed Value: ${parsedValue}`);
+
+            // Check if parsed value is valid
+            if (!isNaN(parsedValue)) {
+              newFormData[fieldName] = parsedValue;
+            } else {
+              console.warn(`Invalid value for ${fieldName}: ${cell}`); // Log invalid values
+              newFormData[fieldName] = 0; // Handle as needed
+            }
+          }
+        });
+      });
+
+      console.log("New Form Data:", newFormData); // Log final new form data
+
+      // Check specifically for DailyOreInput
+      console.log(`DailyOreInput Value: ${newFormData.DailyOreInput}`);
+
+      form.reset(newFormData);
+    });
+  };
 
   const onSubmit = (data: FormValues) => {
     console.log(data);
@@ -134,16 +164,16 @@ const FormComponent: React.FC = () => {
               htmlFor={field.en}
               className="text-sm font-medium leading-6 text-gray-900"
             >
-              {field.en}
+              {field.bg}
             </label>
             <input
               id={field.en}
               type="number"
-              step="0.1"
+              step="0.001"
               {...form.register(field.en as keyof FormValues, {
                 valueAsNumber: true,
               })}
-              placeholder={`${field.bg} (${field.unit})`}
+              placeholder={`0 (${field.unit})`}
               className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
             {form.formState.errors[field.en as keyof FormValues] && (
@@ -155,10 +185,17 @@ const FormComponent: React.FC = () => {
         ))}
       </div>
       <button
-        type="submit"
+        type="button"
+        onClick={handlePaste}
         className="mt-4 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       >
-        Submit
+        Пастирай
+      </button>
+      <button
+        type="submit"
+        className="mt-4 ml-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+      >
+        Запази
       </button>
     </form>
   );
