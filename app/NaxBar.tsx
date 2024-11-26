@@ -33,9 +33,16 @@ export function Navbar() {
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="/targets" legacyBehavior passHref>
+              <Link href="/datainputs" legacyBehavior passHref>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Данни
+                  Въвеждане на данни
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="/models" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Модели
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
