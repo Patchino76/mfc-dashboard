@@ -10,7 +10,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Play, Pause, RotateCcw, AlertTriangle } from "lucide-react";
 import ProcessGauge from "./ProcessGauge";
 import ProcessTrend from "./ProcessTrend";
-import ProcessHistogram from "./ProcessHistogram";
 
 interface ProcessParameter {
   name: string;
@@ -297,7 +296,6 @@ export default function ProcessOptimizer() {
         <TabsList>
           <TabsTrigger value="gauges">Real-time Gauges</TabsTrigger>
           <TabsTrigger value="trends">Historical Trends</TabsTrigger>
-          <TabsTrigger value="histogram">Histogram</TabsTrigger>
         </TabsList>
         <TabsContent value="gauges">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -319,11 +317,6 @@ export default function ProcessOptimizer() {
         <TabsContent value="trends">
           <Card className="p-6 bg-white">
             <ProcessTrend data={historicalData} parameters={parameters} />
-          </Card>
-        </TabsContent>
-        <TabsContent value="histogram">
-          <Card className="p-6 bg-white">
-            <ProcessHistogram data={historicalData} parameters={parameters} />
           </Card>
         </TabsContent>
       </Tabs>
