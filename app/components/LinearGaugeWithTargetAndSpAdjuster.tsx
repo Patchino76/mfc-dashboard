@@ -25,14 +25,9 @@ const LinearGaugeWithTargetAndSpAdjuster = ({
   description = "....",
   actual = 95.1,
   target = 60,
-<<<<<<< HEAD
   min = 40,
   max = 100,
   sp_step = 0.1,
-=======
-  min = 80,
-  max = 95,
->>>>>>> ca4c90c55944c6a45a9a69958f5bf43a72ae4210
   unit = "%",
 }: {
   title?: string;
