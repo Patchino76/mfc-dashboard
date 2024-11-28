@@ -4,6 +4,7 @@ from typing import Any, List, Dict
 from api_dependances import ApiDependancies
 from pydantic import BaseModel, Field
 from datetime import datetime, timedelta
+from sst_downtimes.sst_downtimes import SstDowntimes
 
 app = FastAPI()
 origins = ["http://localhost:3000", "https://localhost:3000"]
@@ -49,6 +50,11 @@ def get_kde_densities(commons: ApiDependancies = Depends()):
     buf = commons.get_kde_plot(commons.tags, commons.sp)
 
     return Response(content=buf.getvalue(), media_type="image/png")
+
+@app.get('/sst-downtimes', response_model=List[Dict[str, Any]])
+def get_sst_downtimes(commos : SstDowntimes = Depends()):
+    print("endpoint sst-downtimes called with commons", commos)
+    # return commos.calculate_downtimes(commos.tags)
 
 if __name__ == "__main__":
     import uvicorn
