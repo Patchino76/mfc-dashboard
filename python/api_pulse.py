@@ -51,10 +51,16 @@ def get_kde_densities(commons: ApiDependancies = Depends()):
 
     return Response(content=buf.getvalue(), media_type="image/png")
 
-@app.get('/sst-downtimes', response_model=List[Dict[str, Any]])
-def get_sst_downtimes(commos : SstDowntimes = Depends()):
+@app.get('/sst-downtimes')
+def get_sst_downtimes(commos : SstDowntimes = Depends(), response_model=List[List[str]]):
     print("endpoint sst-downtimes called with commons", commos)
-    # return commos.calculate_downtimes(commos.tags)
+    df = commos.calculate_downtimes(commos.tag, commos.start, commos.end) 
+    df_to_list = df.values.tolist()
+    for row in df_to_list:
+        row[0] = row[0].strftime("%Y-%m-%d %H:%M:%S")
+        row[1] = row[1].strftime("%Y-%m-%d %H:%M:%S")
+    print(df_to_list)
+    return df_to_list
 
 if __name__ == "__main__":
     import uvicorn

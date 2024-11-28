@@ -19,11 +19,11 @@ sst_tags = [
 ]
 
 class SstDowntimes(BaseModel):
-    tags: Optional[str]  = None 
+    tag: Optional[str]  = None 
     start: Optional[str] = None
     end: Optional[str] = None
     class Config:
-        arbitrary_types_allowed = True
+        arbitrary_types_allowed = True 
     def __init__(self, **data):      
         super().__init__(**data)
 
@@ -35,10 +35,10 @@ class SstDowntimes(BaseModel):
         connection_string = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}"
         return create_engine("mssql+pyodbc:///?odbc_connect=" + connection_string)
 
-    def fetch_data_by_tag(self, tag_name: str, start: str, end: str):
+    def fetch_data_by_tag(self, tag: str, start: str, end: str):
         engine = self.sql_connect()
 
-        tag_id  = next((tag["id"] for tag in sst_tags if tag["name"] == tag_name), None)
+        tag_id  = next((t["id"] for t in sst_tags if t["name"] == tag), None)
         print(tag_id)
         query_str = f"""
             SELECT IndexTime, LoggerTagID, Value 
@@ -52,15 +52,14 @@ class SstDowntimes(BaseModel):
             df = pd.read_sql(query_str, connection)
             df['timestamp'] = pd.to_datetime(df['IndexTime'])
             df = df.drop_duplicates()
-            # print(df)
             return df
 
-    def calculate_downtimes(self, tag_name: str, start: str, end: str) -> pd.DataFrame:
+    def calculate_downtimes(self, tag: str, start: str, end: str) -> pd.DataFrame:
         """
         Calculate downtime periods for a specific tag.
         Returns DataFrame with columns: start_time, end_time, duration_minutes
         """
-        df = self.fetch_data_by_tag(tag_name=tag_name, start=start, end=end)
+        df = self.fetch_data_by_tag(tag=tag, start=start, end=end)
             
         
         # Sort by timestamp

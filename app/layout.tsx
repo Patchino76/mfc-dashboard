@@ -5,7 +5,7 @@ import "@radix-ui/themes/styles.css";
 import QueryClientProvider from "./QueryClientProvider";
 import { Container, Theme, ThemePanel } from "@radix-ui/themes";
 import "./globals.css";
-import { Navbar } from "./NaxBar";
+import { Navbar } from "./NavBar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
