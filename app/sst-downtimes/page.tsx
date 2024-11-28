@@ -88,44 +88,67 @@ const SstDowntimesPage = () => {
     <div className="container mx-auto py-8">
       <Card>
         <CardHeader>
-          <CardTitle>SST Downtimes</CardTitle>
+          <CardTitle>Престой на ССТ оборудване</CardTitle>
           <CardDescription>
-            Review and classify equipment downtimes
+            Преглед на престоите на Дълга лента 2
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
+            <div className="hidden md:grid grid-cols-1 md:grid-cols-4 gap-4 items-center p-0 font-semibold">
+              <div>Начало</div>
+              <div>Край</div>
+              <div>Продължителност</div>
+              <div>Причина</div>
+            </div>
             {entries.map((entry, index) => (
               <div
                 key={index}
-                // className="grid grid-cols-4 gap-4 items-center p-4 rounded-lg bg-gray-50"
-                className={`grid grid-cols-4 gap-4 items-center p-4 rounded-lg ${
+                className={`grid grid-cols-1 md:grid-cols-4 gap-4 items-center p-1 rounded-lg ${
                   entry.type === "" ? "bg-red-50" : "bg-gray-50"
                 }`}
               >
-                <Input value={entry.startTime} readOnly className="bg-white" />
-                <Input value={entry.endTime} readOnly className="bg-white" />
-                <Input
-                  value={`${entry.duration} min`}
-                  readOnly
-                  className="bg-white"
-                />
-                <Select
-                  value={entry.type}
-                  onValueChange={(value: DowntimeType) =>
-                    handleTypeChange(index, value)
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="mechanical">Механични</SelectItem>
-                    <SelectItem value="technical">Технологични</SelectItem>
-                    <SelectItem value="electrical">Електрически</SelectItem>
-                    <SelectItem value="planned">ППР</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center">
+                  <span className="font-semibold md:hidden mr-2">Начало:</span>
+                  <Input
+                    value={entry.startTime}
+                    readOnly
+                    className="bg-white"
+                  />
+                </div>
+                <div className="flex items-center">
+                  <span className="font-semibold md:hidden mr-2">Край:</span>
+                  <Input value={entry.endTime} readOnly className="bg-white" />
+                </div>
+                <div className="flex items-center">
+                  <span className="font-semibold md:hidden mr-2">
+                    Продължителност:
+                  </span>
+                  <Input
+                    value={`${entry.duration} min`}
+                    readOnly
+                    className="bg-white"
+                  />
+                </div>
+                <div className="flex items-center">
+                  <span className="font-semibold md:hidden mr-2">Причина:</span>
+                  <Select
+                    value={entry.type}
+                    onValueChange={(value: DowntimeType) =>
+                      handleTypeChange(index, value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mechanical">Механични</SelectItem>
+                      <SelectItem value="technical">Технологични</SelectItem>
+                      <SelectItem value="electrical">Електрически</SelectItem>
+                      <SelectItem value="planned">ППР</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             ))}
 
