@@ -50,7 +50,7 @@ export default function TargetsPage() {
   //HOOKS------------------------------------------------------------------
   const { data: rawData, isLoading: isLoadingRaw } = usePulseTrendwithTS(
     { tags, start, end },
-    30
+    30 
   );
   const { data: lastRecs } = useLastRecords(tags, 20);
   const {
