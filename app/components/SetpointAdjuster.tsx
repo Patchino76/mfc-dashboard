@@ -63,17 +63,10 @@ export function SetpointAdjuster({
       <div className="relative  flex items-center justify-center">
         <Input
           type="text"
-<<<<<<< HEAD
-          value={setPoint.toFixed(1)}
-          onChange={(e) => setSetPoint(parseFloat(e.target.value))}
-          onBlur={() => setSetPoint(setPoint)}
-          className="w-20 text-center pr-8 h-9"
-=======
           value={localValue}
           onChange={handleInputChange}
           onBlur={handleBlur}
           className="w-28 text-center pr-8 h-9"
->>>>>>> parent of 33c15b0 (finished integration of zustand store for the sp of targets)
         />
         {unit && (
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
