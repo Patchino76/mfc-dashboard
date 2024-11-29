@@ -11,6 +11,7 @@ import {
 import { ChartContainer } from "@/components/ui/chart";
 import { SetpointAdjuster } from "./SetpointAdjuster";
 import { Card, Flex, Text } from "@radix-ui/themes";
+import { useState } from "react";
 import useSetPoint from "../hooks/store";
 
 const LinearGaugeWithTargetAndSpAdjuster = ({

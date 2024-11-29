@@ -19,7 +19,7 @@ export function SetpointAdjuster({
   className,
   unit,
 }: SetpointAdjusterProps) {
-  const { setPoint, increase, decrease, setSp } = useSetPoint();
+  const { setPoint, setSetPoint, increase, decrease } = useSetPoint();
 
   return (
     <div className={cn("flex gap-2 w-fit h-12 items-center", className)}>
@@ -38,8 +38,8 @@ export function SetpointAdjuster({
         <Input
           type="text"
           value={setPoint.toFixed(1)}
-          onChange={(e) => setSp(parseFloat(e.target.value))}
-          onBlur={() => setSp(setPoint)}
+          onChange={(e) => setSetPoint(parseFloat(e.target.value))}
+          onBlur={() => setSetPoint(setPoint)}
           className="w-20 text-center pr-8 h-9"
         />
         {unit && (

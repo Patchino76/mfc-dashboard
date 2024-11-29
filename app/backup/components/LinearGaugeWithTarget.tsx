@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import {
   Bar,
   BarChart,
@@ -8,49 +9,40 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
 import { SetpointAdjuster } from "./SetpointAdjuster";
-import { Card, Flex, Text } from "@radix-ui/themes";
-import useSetPoint from "../hooks/store";
 
-const LinearGaugeWithTargetAndSpAdjuster = ({
-  title = "....",
-  description = "....",
-  actual = 95.0,
+const LinearGaugeWithTarget = ({
+  actual = 95.1,
   target = 60,
-  min = 80,
-  max = 95,
-  unit = "%",
+  min = 40,
+  max = 100,
 }: {
-  title?: string;
-  description?: string;
   actual?: number;
   target?: number;
   min?: number;
   max?: number;
-  sp_step?: number;
-  unit?: string;
 }) => {
-  const data = [{ name: "Actual", value: actual.toFixed(1) }];
-  const { setPoint } = useSetPoint();
+  const data = [{ name: "Actual", value: actual }];
+  const [spValue, setSpValue] = React.useState(target);
 
   return (
-    <Card
-      style={{
-        width: "100%",
-        height: "100%",
-      }}
-    >
-      <Flex direction="column" gap="1" align={"center"}>
-        <Text size="4" weight="bold">
-          Извличане
-        </Text>
-        {/* <Text as="p" size="2" color="gray">
-          моментна стойност [%]
-        </Text> */}
-      </Flex>
-
-      <Flex gap="1" align={"center"} height={"260px"}>
+    <Card className="w-full max-w-sm m-3">
+      <CardHeader>
+        <CardTitle className="flex justify-center">Извличане</CardTitle>
+        <CardDescription className="flex justify-center">
+          Действително спрямо цел
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
         <ChartContainer
           config={{
             value: {
@@ -72,13 +64,13 @@ const LinearGaugeWithTargetAndSpAdjuster = ({
               tickFormatter={(tick) => `${tick}%`}
             />
             <ReferenceLine
-              y={setPoint}
+              y={spValue}
               stroke="hsl(var(--destructive))"
               strokeWidth={2}
               strokeDasharray="3 3"
               label={{
                 position: "left",
-                value: `SP: ${setPoint.toFixed(1)}%`,
+                value: `SP: ${spValue.toFixed(1)}%`,
                 fill: "hsl(var(--destructive))",
                 fontSize: 12,
                 dx: 60,
@@ -101,7 +93,7 @@ const LinearGaugeWithTargetAndSpAdjuster = ({
                       dominantBaseline="middle"
                       className="fill-white font-bold"
                     >
-                      {value?.toString()}%
+                      {value}%
                     </text>
                   );
                 }}
@@ -109,13 +101,19 @@ const LinearGaugeWithTargetAndSpAdjuster = ({
             </Bar>
           </BarChart>
         </ChartContainer>
-      </Flex>
-
-      <Flex direction="column" gap="1" align={"center"}>
-        <SetpointAdjuster min={min} max={max} unit={unit} />
-      </Flex>
+      </CardContent>
+      <CardFooter className="flex justify-center">
+        <SetpointAdjuster
+          value={spValue}
+          onChange={setSpValue}
+          step={0.1}
+          min={min}
+          max={max}
+          unit="%"
+        />
+      </CardFooter>
     </Card>
   );
 };
 
-export default LinearGaugeWithTargetAndSpAdjuster;
+export default LinearGaugeWithTarget;
