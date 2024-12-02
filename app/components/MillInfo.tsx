@@ -12,34 +12,23 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-
-interface MillInfoProps {
-  title: string;
-  millState: string;
-  shift1: number;
-  shift2: number;
-  shift3: number;
-  load: number;
-  loadArray: number[];
-}
+import { MillInfoProps } from "../hooks/useMills";
 
 const MillsInfo = ({
-  title,
-  millState,
-  shift1,
-  shift2,
-  shift3,
-  load,
-  loadArray,
-}: MillInfoProps) => {
-  const chartData = loadArray.map((value, index) => ({
+  millProps,
+  oreTrend,
+}: {
+  millProps: MillInfoProps;
+  oreTrend: number[];
+}) => {
+  const chartData = oreTrend.map((value, index) => ({
     name: index,
     load: value,
   }));
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg">{title}</CardTitle>
+        <CardTitle className="text-lg">{millProps.title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <AnimatedGif
@@ -49,24 +38,28 @@ const MillsInfo = ({
         <Table>
           <TableBody>
             <TableRow>
-              <TableCell className="font-medium">Mill State</TableCell>
-              <TableCell className="font-bold">{millState}</TableCell>
+              <TableCell className="font-medium">Състояние</TableCell>
+              <TableCell className="font-bold">{millProps.state}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="font-medium">Shift 1</TableCell>
-              <TableCell>{shift1}</TableCell>
+              <TableCell className="font-medium">Смяна 1</TableCell>
+              <TableCell>{millProps.shift1}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="font-medium">Shift 2</TableCell>
-              <TableCell>{shift2}</TableCell>
+              <TableCell className="font-medium">Смяна 2</TableCell>
+              <TableCell>{millProps.shift2}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="font-medium">Shift 3</TableCell>
-              <TableCell>{shift3}</TableCell>
+              <TableCell className="font-medium">Смяна 3</TableCell>
+              <TableCell>{millProps.shift3}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="font-medium">Current Load</TableCell>
-              <TableCell>{load}</TableCell>
+              <TableCell className="font-medium">Тотал</TableCell>
+              <TableCell>{millProps.total}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">Лента</TableCell>
+              <TableCell>{millProps.ore}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

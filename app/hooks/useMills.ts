@@ -1,23 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export interface qryProps {
-  tag: string;
-  start: string;
-  end: string;
+export interface MillInfoProps {
+  title: string;
+  state: string;
+  shift1?: number;
+  shift2?: number;
+  shift3?: number;
+  total?: number;
+  ore: number;
 }
-export type DowntimeEntry = [string, string, number];
 
-export function useSST(queryData: qryProps, refreshInterval: number = 20) {
-  return useQuery<DowntimeEntry[]>({
-    queryKey: ["tsst-dt"],
+export function useMills(mill: string, refreshInterval: number = 20) {
+  return useQuery<MillInfoProps>({
+    queryKey: ["ore-by-mill-totals"],
     queryFn: async () => {
-      const { tag, start, end } = queryData;
-      const response = await axios.get<DowntimeEntry[]>(
-        "http://localhost:8000/sst-downtimes",
-
+      const response = await axios.get<MillInfoProps>(
+        "http://localhost:8000/ore-by-mill",
         {
-          params: { tag, start, end },
+          params: { mill },
         }
       );
       return response.data;

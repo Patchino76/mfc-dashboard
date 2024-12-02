@@ -5,6 +5,8 @@ from api_dependances import ApiDependancies
 from pydantic import BaseModel, Field
 from datetime import datetime, timedelta
 from sst_downtimes.sst_downtimes import SstDowntimes
+from mills.mills_api_utils import MillsUtils
+
 
 app = FastAPI()
 origins = ["http://localhost:3000", "https://localhost:3000"]
@@ -61,6 +63,12 @@ def get_sst_downtimes(commos : SstDowntimes = Depends(), response_model=List[Lis
         row[1] = row[1].strftime("%Y-%m-%d %H:%M:%S")
     print(df_to_list)
     return df_to_list
+
+@app.get('/ore-by-mill')
+def get_ore_by_mill(mill:str, response_model=Dict[str, Any]): 
+    ore = MillsUtils()
+    tags = ore.fetch_ore_totals_by_mill(mill)
+    return tags
 
 if __name__ == "__main__":
     import uvicorn

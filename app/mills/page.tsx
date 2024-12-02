@@ -1,14 +1,19 @@
+"use client";
 import React from "react";
-import MillInfo from "../components/MillInfo";
 import { generateFakeData } from "../utils/generate-mill-data";
-
-const millData = generateFakeData();
+import { useMills } from "../hooks/useMills";
+import MillInfo from "../components/MillInfo";
 
 const MillsInfoPage = () => {
+  const { data } = useMills("Mill01");
+  const { loadArray } = generateFakeData();
+
+  if (!data) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div>
-      <MillInfo {...millData} />
-    </div>
+    <div>{data && <MillInfo millProps={data} oreTrend={loadArray} />}</div>
   );
 };
 
