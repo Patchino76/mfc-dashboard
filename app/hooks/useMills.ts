@@ -28,3 +28,25 @@ export function useMills(mill: string, refreshInterval: number = 20) {
     networkMode: "always",
   });
 }
+
+export function useTrendByTag(
+  mill: string,
+  tag: string,
+  refreshInterval: number = 15
+) {
+  return useQuery<number[]>({
+    queryKey: ["mills-trend-by-tag"],
+    queryFn: async () => {
+      const response = await axios.get<number[]>(
+        "http://localhost:8000/mills-trend-by-tag",
+        {
+          params: { mill, tag },
+        }
+      );
+      return response.data;
+    },
+    staleTime: 0,
+    refetchInterval: refreshInterval * 1000,
+    networkMode: "always",
+  });
+}

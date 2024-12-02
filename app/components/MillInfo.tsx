@@ -39,27 +39,32 @@ const MillsInfo = ({
           <TableBody>
             <TableRow>
               <TableCell className="font-medium">Състояние</TableCell>
-              <TableCell className="font-bold">{millProps.state}</TableCell>
+              <TableCell className="font-medium">{millProps.state}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">Смяна 1</TableCell>
               <TableCell>{millProps.shift1}</TableCell>
+              <TableCell className="font-medium">t</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">Смяна 2</TableCell>
               <TableCell>{millProps.shift2}</TableCell>
+              <TableCell className="font-medium">t</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">Смяна 3</TableCell>
               <TableCell>{millProps.shift3}</TableCell>
+              <TableCell className="font-medium">t</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">Тотал</TableCell>
               <TableCell>{millProps.total}</TableCell>
+              <TableCell className="font-medium">t</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">Лента</TableCell>
               <TableCell>{millProps.ore}</TableCell>
+              <TableCell className="font-medium">t/h</TableCell>
             </TableRow>
           </TableBody>
         </Table>

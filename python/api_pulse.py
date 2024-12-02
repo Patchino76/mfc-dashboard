@@ -70,6 +70,14 @@ def get_ore_by_mill(mill:str, response_model=Dict[str, Any]):
     tags = ore.fetch_ore_totals_by_mill(mill)
     return tags
 
+@app.get('/mills-trend-by-tag')
+def get_mills_trend_by_tag(mill:str, tag:str): #, response_model=List[int]
+    ore = MillsUtils()
+    df = ore.fetch_trend_by_tag(mill=mill, tag=tag)
+    df_to_list = df.values.tolist()
+    print(df_to_list)
+    return df_to_list
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("api_pulse:app", host="0.0.0.0", port=8000, reload=True)

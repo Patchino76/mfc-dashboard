@@ -7,10 +7,7 @@ import pandas as pd
 from datetime import datetime as dt, timedelta
 from sqlalchemy import create_engine, text
 from tags_definition import mills_tags
-
-
-
-
+import random
 
 class MillsUtils(BaseModel):
     tag: Optional[str]  = None 
@@ -60,9 +57,27 @@ class MillsUtils(BaseModel):
                     else:
                         result_dict[shift_key] = 0.0
 
-        result_dict['state'] = True if result_dict['ore'] >= 10 else False
+        result_dict['state'] = "работи" if result_dict['ore'] >= 10 else "престой"
         result_dict["title"] = mill
 
         return result_dict
 
-    
+    def fetch_trend_by_tag(self, mill: str, tag: str):
+        # Find the tag ID for the given mill from ore list
+        mill_tag = next((item for item in mills_tags[tag] if item["name"] == mill), None)
+        if mill_tag is None:
+            return []
+            
+        tag_id = mill_tag["id"]
+        
+        query_str = f"select top 300 IndexTime,  Value from LoggerValues where LoggerTagID = {tag_id} order by IndexTime desc"
+        with self.sql_connect().connect() as connection:
+            df = pd.read_sql(query_str, connection)
+            df['timestamp'] = pd.to_datetime(df['IndexTime'])
+            df = df.drop_duplicates()
+            df.set_index('timestamp', inplace=True)
+            df.drop('IndexTime', axis=1, inplace=True)
+            df = df.resample('1h').mean()
+            return df
+
+
