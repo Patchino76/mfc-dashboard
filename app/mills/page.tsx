@@ -1,16 +1,15 @@
-import AnimatedGif from "@/app/components/AnimatedGif";
 import React from "react";
+import MillInfo from "../components/MillInfo";
+import { generateFakeData } from "../utils/generate-mill-data";
 
-const MillsOverviewPage = () => {
+const millData = generateFakeData();
+
+const MillsInfoPage = () => {
   return (
     <div>
-      <h1>My Animated GIF</h1>
-      <AnimatedGif
-        gifSrc="/images/mill_running.gif"
-        jpgSrc="/images/mill_stopped.jpg"
-      />
+      <MillInfo {...millData} />
     </div>
   );
 };
 
-export default MillsOverviewPage;
+export default MillsInfoPage;
