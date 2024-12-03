@@ -66,18 +66,23 @@ def get_sst_downtimes(commos : SstDowntimes = Depends(), response_model=List[Lis
 
 @app.get('/ore-by-mill')
 def get_ore_by_mill(mill:str, response_model=Dict[str, Any]): 
-    ore = MillsUtils()
-    tags = ore.fetch_ore_totals_by_mill(mill)
+    mill = MillsUtils()
+    tags = mill.fetch_ore_totals_by_mill(mill)
     return tags
 
 @app.get('/mills-trend-by-tag', response_model=List[Dict[str, Any]])
 def get_mills_trend_by_tag(mill:str, tag:str, trendPoints: int):
-    ore = MillsUtils()
-    df = ore.fetch_trend_by_tag(mill=mill, tag=tag, trendPoints=trendPoints)
+    mill = MillsUtils()
+    df = mill.fetch_trend_by_tag(mill=mill, tag=tag, trendPoints=trendPoints)
     df_dict = df.reset_index().to_dict('records')
     result = [{'timestamp': item['timestamp'].strftime("%Y-%m-%d %H:%M"), 'value': item['Value']} for item in df_dict]
-    print(result)
+    # print(result)
     return result
+@app.get('/mills-by-parameter') #, response_model=List[Dict[str, Any]]
+def get_mills_by_parameter(parameter: str = "ore"):
+    mill = MillsUtils()
+    rez_dict = mill.fetch_all_mills_by_parameter(parameter=parameter)
+    return rez_dict
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,18 +1,23 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const AnimatedGif = ({
   gifSrc,
   jpgSrc,
+  state,
 }: {
   gifSrc: string;
   jpgSrc: string;
+  state: boolean;
 }) => {
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(state);
 
   const toggleAnimation = () => {
     setIsPlaying((prev) => !prev);
   };
+  useEffect(() => {
+    setIsPlaying(state);
+  }, [state]);
 
   return (
     <div className="flex flex-col items-center gap-2">

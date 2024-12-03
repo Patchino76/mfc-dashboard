@@ -56,7 +56,14 @@ export function Navbar() {
             <NavigationMenuItem>
               <Link href="/mills" legacyBehavior passHref>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  Мелнично
+                  Мелници
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="/mills-totals" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Преработка
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>

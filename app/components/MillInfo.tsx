@@ -27,15 +27,12 @@ const MillsInfo = ({
       </CardHeader>
       <CardContent className="space-y-4">
         <AnimatedGif
+          state={millProps.state}
           gifSrc="/images/mill_running.gif"
           jpgSrc="/images/mill_stopped.jpg"
         />
         <Table>
           <TableBody>
-            <TableRow>
-              <TableCell className="font-medium">Състояние</TableCell>
-              <TableCell className="font-medium">{millProps.state}</TableCell>
-            </TableRow>
             <TableRow>
               <TableCell className="font-medium">Смяна 1</TableCell>
               <TableCell>{millProps.shift1}</TableCell>

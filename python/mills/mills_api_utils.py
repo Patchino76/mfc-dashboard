@@ -41,7 +41,7 @@ class MillsUtils(BaseModel):
                 query_str = f"""
                 WITH LastRecords AS (
                     SELECT Value, LoggerTagID,
-                    ROW_NUMBER() OVER (PARTITION BY LoggerTagID ORDER BY IndexTime ASC) as rn
+                    ROW_NUMBER() OVER (PARTITION BY LoggerTagID ORDER BY IndexTime DESC) as rn
                     FROM LoggerValues
                     WHERE LoggerTagID = {tag_id}
                 )
@@ -57,8 +57,9 @@ class MillsUtils(BaseModel):
                     else:
                         result_dict[shift_key] = 0.0
 
-        result_dict['state'] = "работи" if result_dict['ore'] >= 10 else "престой"
+        result_dict['state'] = True if result_dict['ore'] >= 10 else False
         mill_bg_title = next((item["bg"] for item in mills_dict if item["en"] == mill), None)
+        print(mill_bg_title)
         result_dict["title"] = mill_bg_title
 
 
@@ -73,14 +74,44 @@ class MillsUtils(BaseModel):
             
         tag_id = mill_tag["id"]
         
-        query_str = f"select top {trendPoints} IndexTime,  Value from LoggerValues where LoggerTagID = {tag_id} order by IndexTime desc"
+        query_str = f"select top {trendPoints} DATEADD(hour, 3, IndexTime) as IndexTime, Value from LoggerValues where LoggerTagID = {tag_id} order by IndexTime desc"
         with self.sql_connect().connect() as connection:
             df = pd.read_sql(query_str, connection)
             df['timestamp'] = pd.to_datetime(df['IndexTime'])
             df = df.drop_duplicates()
             df.set_index('timestamp', inplace=True)
             df.drop('IndexTime', axis=1, inplace=True)
-            df = df.resample('1h').mean()
+            df = df.resample('15min').mean()
             return df
 
-
+    def fetch_all_mills_by_parameter(self, parameter: str = "ore"):
+        rows = mills_tags[parameter]
+        tags_id = [row["id"] for row in rows]
+        print(tags_id)
+        # Create CASE statement for ordering
+        order_case = " ".join([f"WHEN {tag_id} THEN {i}" for i, tag_id in enumerate(tags_id)])
+        
+        query_str = """
+            WITH LastValues AS (
+                SELECT 
+                    LoggerTagID,
+                    Value,
+                    ROW_NUMBER() OVER (PARTITION BY LoggerTagID ORDER BY IndexTime DESC) as rn
+                FROM LoggerValues 
+                WHERE LoggerTagID IN ({})
+            )
+            SELECT LoggerTagID, Value 
+            FROM LastValues 
+            WHERE rn = 1
+            ORDER BY CASE LoggerTagID {}
+            END
+        """.format(', '.join(map(str, tags_id)), order_case)
+        
+        with self.sql_connect().connect() as connection:
+            df = pd.read_sql(query_str, connection)
+            mills_bg = [item["bg"] for item in mills_dict]
+            print(mills_bg)
+            values = df['Value'].tolist()
+            print(values)
+            res_dict = [{"mill": mill, "value": value} for mill, value in zip(mills_bg, values)]
+            return res_dict

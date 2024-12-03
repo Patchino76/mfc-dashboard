@@ -3,7 +3,7 @@ import axios from "axios";
 
 export interface MillInfoProps {
   title: string;
-  state: string;
+  state: boolean;
   shift1?: number;
   shift2?: number;
   shift3?: number;
@@ -15,10 +15,14 @@ export interface TrendDataPoint {
   timestamp: string;
   value: number;
 }
+export interface MillsByParameter {
+  mill: string;
+  value: number;
+}
 
 export function useMills(mill: string, refreshInterval: number = 20) {
   return useQuery<MillInfoProps>({
-    queryKey: ["ore-by-mill-totals"],
+    queryKey: ["ore-by-mill-totals", mill],
     queryFn: async () => {
       const response = await axios.get<MillInfoProps>(
         "http://localhost:8000/ore-by-mill",
@@ -41,7 +45,7 @@ export function useMillsTrendByTag(
   refreshInterval: number = 20
 ) {
   return useQuery<TrendDataPoint[]>({
-    queryKey: ["mills-trend-by-tag", mill, tag],
+    queryKey: ["mills-trend-by-tag", mill, tag, trendPoints],
     queryFn: async () => {
       const response = await axios.get<TrendDataPoint[]>(
         "http://localhost:8000/mills-trend-by-tag",
@@ -54,5 +58,28 @@ export function useMillsTrendByTag(
     staleTime: 0,
     refetchInterval: refreshInterval * 1000,
     networkMode: "always",
+    retry: 2,
+  });
+}
+
+export function useMillsByParameter(
+  parameter: string,
+  refreshInterval: number = 20
+) {
+  return useQuery<MillsByParameter[]>({
+    queryKey: ["mills-by-parameter", parameter],
+    queryFn: async () => {
+      const response = await axios.get<MillsByParameter[]>(
+        "http://localhost:8000/mills-by-parameter",
+        {
+          params: { parameter },
+        }
+      );
+      return response.data;
+    },
+    staleTime: 0,
+    refetchInterval: refreshInterval * 1000,
+    networkMode: "always",
+    retry: 2,
   });
 }
