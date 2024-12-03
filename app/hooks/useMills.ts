@@ -11,6 +11,11 @@ export interface MillInfoProps {
   ore: number;
 }
 
+export interface TrendDataPoint {
+  timestamp: string;
+  value: number;
+}
+
 export function useMills(mill: string, refreshInterval: number = 20) {
   return useQuery<MillInfoProps>({
     queryKey: ["ore-by-mill-totals"],
@@ -29,18 +34,19 @@ export function useMills(mill: string, refreshInterval: number = 20) {
   });
 }
 
-export function useTrendByTag(
+export function useMillsTrendByTag(
   mill: string,
   tag: string,
-  refreshInterval: number = 15
+  trendPoints: number = 500, // No. raw points resampled to 1h freq
+  refreshInterval: number = 20
 ) {
-  return useQuery<number[]>({
-    queryKey: ["mills-trend-by-tag"],
+  return useQuery<TrendDataPoint[]>({
+    queryKey: ["mills-trend-by-tag", mill, tag],
     queryFn: async () => {
-      const response = await axios.get<number[]>(
+      const response = await axios.get<TrendDataPoint[]>(
         "http://localhost:8000/mills-trend-by-tag",
         {
-          params: { mill, tag },
+          params: { mill, tag, trendPoints },
         }
       );
       return response.data;

@@ -8,27 +8,22 @@ import {
   Line,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { MillInfoProps } from "../hooks/useMills";
+import { MillInfoProps, TrendDataPoint } from "../hooks/useMills";
 
 const MillsInfo = ({
   millProps,
   oreTrend,
 }: {
   millProps: MillInfoProps;
-  oreTrend: number[];
+  oreTrend: TrendDataPoint[];
 }) => {
-  const chartData = oreTrend.map((value, index) => ({
-    name: index,
-    load: value,
-  }));
   return (
     <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg">{millProps.title}</CardTitle>
+      <CardHeader className="pb-2 text-center">
+        <CardTitle className="text-lg text-center">{millProps.title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <AnimatedGif
@@ -68,23 +63,31 @@ const MillsInfo = ({
             </TableRow>
           </TableBody>
         </Table>
-        <div className="h-32 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" tick={false} />
-              <YAxis width={30} />
-              <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="load"
-                stroke="#8884d8"
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={oreTrend}>
+            <XAxis dataKey="timestamp" hide={true} />
+            <YAxis
+              domain={[
+                (dataMin: number) => Math.floor(dataMin * 0.95),
+                (dataMax: number) => Math.ceil(dataMax * 1.05),
+              ]}
+              tickFormatter={(value) => value.toFixed(1)}
+            />
+            <Tooltip
+              labelFormatter={(label) => {
+                return `Time: ${label}`;
+              }}
+              formatter={(value: number) => [`${value.toFixed(1)} t/h`, "Rate"]}
+            />
+            <Line
+              type="monotone"
+              dataKey="value"
+              stroke="#8884d8"
+              dot={false}
+              strokeWidth={2}
+            />
+          </LineChart>
+        </ResponsiveContainer>
       </CardContent>
     </Card>
   );
