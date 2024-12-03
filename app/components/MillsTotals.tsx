@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  LabelList,
 } from "recharts";
 
 type MachineData = {
@@ -42,34 +43,30 @@ const MillsTotals = ({
   title = "Преработка на мелнични агрегати",
 }: MillsPerformanceChartProps) => {
   return (
-    <Card className="w-full max-w-4xl mx-auto">
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">
+        <CardTitle className="text-2xl font-medium text-center">
           {title}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="w-full h-[400px]">
+        <div className="w-full h-[500px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={data}
               margin={{
-                top: 20,
+                top: 40,
                 right: 30,
                 left: 20,
                 bottom: 5,
               }}
             >
-              {/* <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="hsl(var(--muted-foreground))"
-              /> */}
               <XAxis
                 dataKey="mill"
                 angle={-45}
                 textAnchor="end"
                 interval={0}
-                height={70}
+                height={80}
                 tick={{ fill: "hsl(var(--foreground))" }}
               />
               <YAxis tick={{ fill: "hsl(var(--foreground))" }} />
@@ -82,6 +79,12 @@ const MillsTotals = ({
                 }}
               />
               <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                <LabelList
+                  dataKey="value"
+                  position="top"
+                  fill="hsl(var(--foreground))"
+                  formatter={(value: number) => value.toFixed(0)}
+                />
                 {data.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}

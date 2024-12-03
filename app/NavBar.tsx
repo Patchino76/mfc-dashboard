@@ -70,7 +70,7 @@ export function Navbar() {
           </NavigationMenuList>
         </NavigationMenu>
         <div className="ml-auto flex items-center space-x-4">
-          <h1 className="font-bold">ДАННИ ЗА МЕДНА ФЛОТАЦИЯ - РЕД 1</h1>
+          <h1 className="font-bold">OK</h1>
         </div>
         <div className="ml-auto flex items-center space-x-4">
           {/* <MyMonthPicker onSelect={handleMonthSelect} /> */}
