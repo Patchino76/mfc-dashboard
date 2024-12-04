@@ -78,7 +78,7 @@ class MillsUtils(BaseModel):
         with self.sql_connect().connect() as connection:
             df = pd.read_sql(query_str, connection)
             df['timestamp'] = pd.to_datetime(df['IndexTime'])
-            df = df.drop_duplicates()
+            df = df.ffill()
             df.set_index('timestamp', inplace=True)
             df.drop('IndexTime', axis=1, inplace=True)
             df = df.resample('15min').mean()

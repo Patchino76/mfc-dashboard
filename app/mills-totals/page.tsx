@@ -48,7 +48,7 @@ const MillsTotalsPage = () => {
       </Card>
 
       <div className="flex flex-row justify-around gap-4  w-fill">
-        <SemiCircleGauge
+        {/* <SemiCircleGauge
           PV={75}
           SP={80}
           unit="°C"
@@ -83,7 +83,7 @@ const MillsTotalsPage = () => {
           max={100}
           low={15}
           high={80}
-        />
+        /> */}
       </div>
     </div>
   );
