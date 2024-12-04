@@ -45,6 +45,7 @@
     "react-google-charts": "^5.2.1",
     "react-hook-form": "^7.53.2",
     "react-lite-month-picker": "^1.2.19",
+    "reactflow": "^11.11.4",
     "recharts": "^2.13.3",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
