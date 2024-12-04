@@ -27,7 +27,7 @@
     "apexcharts": "^3.54.1",
     "axios": "^1.7.7",
     "chart.js": "^4.4.3",
-    "class-variance-authority": "^0.7.0",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
     "d3": "^7.9.0",
@@ -46,12 +46,13 @@
     "react-hook-form": "^7.53.2",
     "react-lite-month-picker": "^1.2.19",
     "recharts": "^2.13.3",
-    "tailwind-merge": "^2.5.4",
+    "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8",
     "zustand": "^5.0.1"
   },
   "devDependencies": {
+    "@shadcn/ui": "^0.0.4",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

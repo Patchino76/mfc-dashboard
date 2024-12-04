@@ -78,7 +78,7 @@ def get_mills_trend_by_tag(mill:str, tag:str, trendPoints: int):
     result = [{'timestamp': item['timestamp'].strftime("%Y-%m-%d %H:%M"), 'value': item['Value']} for item in df_dict]
     # print(result)
     return result
-@app.get('/mills-by-parameter') #, response_model=List[Dict[str, Any]]
+@app.get('/mills-by-parameter', response_model=List[Dict[str, Any]]) 
 def get_mills_by_parameter(parameter: str = "ore"):
     mill = MillsUtils()
     rez_dict = mill.fetch_all_mills_by_parameter(parameter=parameter)

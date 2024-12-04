@@ -14,7 +14,10 @@ matplotlib.use('Agg')
 pd.set_option('future.no_silent_downcasting', True)
 
 sst_tags = [
+    {"id": 807, "name" : "SST_FB_LONG_BELT_STR1", "desc" : "Дълга лента 1" },
     {"id": 832, "name" : "SST_FB_LONG_BELT_STR2", "desc" : "Дълга лента 2" },
+    {"id": 859, "name" : "SST_FB_LONG_BELT_STR3", "desc" : "Дълга лента 3" },
+    {"id": 884, "name" : "SST_FB_LONG_BELT_STR4", "desc" : "Дълга лента 4" },
     {"id": 854, "name" : "SST_CB_KUBRIA_ON_STR2", "desc" : "Кубрия 2" },
 ]
 
