@@ -4,7 +4,8 @@ import MillsTotals from "../components/MillsTotals";
 import { useMillsByParameter } from "../hooks/useMills";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SemiCircleGauge } from "../components/SemiCircleGauge";
+import CalendarArrows from "./CalendarArrows";
+import ComparisonTable from "./ComparisonTable";
 
 const parameters = [
   { id: "shift1", label: "Смяна 1" },
@@ -16,12 +17,37 @@ const parameters = [
 
 const MillsTotalsPage = () => {
   const [selectedParameter, setSelectedParameter] = useState("ore");
-  const { data: machineData } = useMillsByParameter(selectedParameter);
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const previousDate = new Date(currentDate);
+  previousDate.setDate(currentDate.getDate() - 1);
+
+  // Format dates at UTC midnight
+  const currentDateStr = new Date(currentDate.getTime() - (currentDate.getTimezoneOffset() * 60000))
+    .toISOString()
+    .split('T')[0];
+  const previousDateStr = new Date(previousDate.getTime() - (previousDate.getTimezoneOffset() * 60000))
+    .toISOString()
+    .split('T')[0];
+
+  const { data: currentData } = useMillsByParameter(
+    selectedParameter,
+    currentDateStr
+  );
+  const { data: previousData } = useMillsByParameter(
+    selectedParameter,
+    previousDateStr
+  );
 
   return (
-    <div className="min-h-screen p-4 space-y-4">
-      <Card className="w-full">
-        <CardContent className="p-6">
+    <div className="h-fit p-3 flex flex-row gap-3">
+      <Card className="w-[60%] flex flex-col">
+        <CardHeader className="flex flex-row items-center justify-between space-y-2 pb-0">
+          <CardTitle className="text-2xl font-medium">
+            Справки мелнично
+          </CardTitle>
+          <CalendarArrows date={currentDate} onDateChange={setCurrentDate} />
+        </CardHeader>
+        <CardContent className="flex-1 pt-3">
           <Tabs
             defaultValue="ore"
             className="w-full"
@@ -39,52 +65,27 @@ const MillsTotalsPage = () => {
               ))}
             </TabsList>
             {parameters.map((param) => (
-              <TabsContent key={param.id} value={param.id}>
-                {machineData && <MillsTotals data={machineData} />}
+              <TabsContent className="pt-3" key={param.id} value={param.id}>
+                {currentData && <MillsTotals data={currentData} />}
               </TabsContent>
             ))}
           </Tabs>
         </CardContent>
       </Card>
 
-      <div className="flex flex-row justify-around gap-4  w-fill">
-        {/* <SemiCircleGauge
-          PV={75}
-          SP={80}
-          unit="°C"
-          min={0}
-          max={100}
-          low={20}
-          high={90}
-        />
-        <SemiCircleGauge
-          PV={65}
-          SP={70}
-          unit="°C"
-          min={0}
-          max={100}
-          low={30}
-          high={85}
-        />
-        <SemiCircleGauge
-          PV={85}
-          SP={82}
-          unit="°C"
-          min={0}
-          max={100}
-          low={25}
-          high={95}
-        />
-        <SemiCircleGauge
-          PV={55}
-          SP={60}
-          unit="°C"
-          min={0}
-          max={100}
-          low={15}
-          high={80}
-        /> */}
-      </div>
+      {previousData && currentData && (
+        <Card className="flex-1 flex flex-col">
+          <CardHeader>
+            <CardTitle>Разлики</CardTitle>
+          </CardHeader>
+          <CardContent className="flex-1">
+            <ComparisonTable
+              previousData={previousData}
+              currentData={currentData}
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

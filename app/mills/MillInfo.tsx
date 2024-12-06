@@ -12,11 +12,11 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { TrendingUp, Gauge } from "lucide-react";
 
 import { MillInfoProps, TrendDataPoint } from "../hooks/useMills";
-import { SemiCircleGauge } from "./CardSemiCircleGauge";
-import { SemiCircleGaugeProps } from "./SemiCircleGauge";
-import { SemiCircleOreGauge } from "../mills/SemiCircleOreGauge";
+import { SemiCircleGaugeProps } from "../components/SemiCircleGauge";
+import { SemiCircleOreGauge } from "./SemiCircleOreGauge";
 
 const MillsInfo = ({
   millProps,
@@ -62,11 +62,15 @@ const MillsInfo = ({
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="pb-2 text-center flex flex-row items-center justify-between">
         <CardTitle className="text-lg">{millProps.title}</CardTitle>
-        <Switch
-          checked={showGraph}
-          onCheckedChange={setShowGraph}
-          className="scale-75"
-        />
+        <div className="flex items-center gap-2">
+          <TrendingUp className={`w-4 h-4 ${showGraph ? 'text-primary' : 'text-muted-foreground'}`} />
+          <Switch
+            checked={showGraph}
+            onCheckedChange={setShowGraph}
+            className="scale-75"
+          />
+          <Gauge className={`w-4 h-4 ${!showGraph ? 'text-primary' : 'text-muted-foreground'}`} />
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <AnimatedGif

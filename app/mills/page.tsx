@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useMills, useMillsTrendByTag } from "../hooks/useMills";
-import MillInfo from "../components/MillInfo";
+import MillInfo from "./MillInfo";
 import { Grid } from "@radix-ui/themes";
 import { Menu } from "lucide-react";
 import {

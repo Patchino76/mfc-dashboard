@@ -64,15 +64,19 @@ export function useMillsTrendByTag(
 
 export function useMillsByParameter(
   parameter: string,
+  date: string,
   refreshInterval: number = 20
 ) {
   return useQuery<MillsByParameter[]>({
-    queryKey: ["mills-by-parameter", parameter],
+    queryKey: ["mills-by-parameter", parameter, date],
     queryFn: async () => {
       const response = await axios.get<MillsByParameter[]>(
         "http://localhost:8000/mills-by-parameter",
         {
-          params: { parameter },
+          params: {
+            parameter,
+            date
+          }
         }
       );
       return response.data;

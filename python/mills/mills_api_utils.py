@@ -84,7 +84,8 @@ class MillsUtils(BaseModel):
             df = df.resample('15min').mean()
             return df
 
-    def fetch_all_mills_by_parameter(self, parameter: str = "ore"):
+    def fetch_all_mills_by_parameter(self, parameter: str = "ore", selected_date: datetime.datetime = None):
+        
         rows = mills_tags[parameter]
         tags_id = [row["id"] for row in rows]
         print(tags_id)
@@ -96,22 +97,27 @@ class MillsUtils(BaseModel):
                 SELECT 
                     LoggerTagID,
                     Value,
-                    ROW_NUMBER() OVER (PARTITION BY LoggerTagID ORDER BY IndexTime DESC) as rn
+                    ROW_NUMBER() OVER (PARTITION BY LoggerTagID 
+                        ORDER BY CASE 
+                            WHEN IndexTime <= DATEADD(day, 1, CAST(? AS datetime)) THEN IndexTime 
+                            ELSE NULL 
+                        END DESC) as rn
                 FROM LoggerValues 
                 WHERE LoggerTagID IN ({})
+                AND IndexTime <= DATEADD(day, 1, CAST(? AS datetime))
             )
             SELECT LoggerTagID, Value 
             FROM LastValues 
             WHERE rn = 1
             ORDER BY CASE LoggerTagID {}
             END
-        """.format(', '.join(map(str, tags_id)), order_case)
+        """.format(','.join(map(str, tags_id)), order_case)
         
         with self.sql_connect().connect() as connection:
-            df = pd.read_sql(query_str, connection)
+            # Convert selected_date to string in ISO format if it's provided
+            date_param = selected_date.strftime('%Y-%m-%d') if selected_date else datetime.datetime.now().strftime('%Y-%m-%d')
+            df = pd.read_sql(query_str, connection, params=(date_param, date_param))
             mills_bg = [item["bg"] for item in mills_dict]
-            print(mills_bg)
             values = df['Value'].tolist()
-            print(values)
             res_dict = [{"mill": mill, "value": value} for mill, value in zip(mills_bg, values)]
             return res_dict

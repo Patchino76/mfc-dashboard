@@ -79,9 +79,13 @@ def get_mills_trend_by_tag(mill:str, tag:str, trendPoints: int):
     # print(result)
     return result
 @app.get('/mills-by-parameter', response_model=List[Dict[str, Any]]) 
-def get_mills_by_parameter(parameter: str = "ore"):
+def get_mills_by_parameter(parameter: str, date: str):
+    print(parameter, date)
     mill = MillsUtils()
-    rez_dict = mill.fetch_all_mills_by_parameter(parameter=parameter)
+    rez_dict = mill.fetch_all_mills_by_parameter(
+        parameter=parameter,
+        selected_date=datetime.strptime(date, '%Y-%m-%d')
+    )
     return rez_dict
 
 if __name__ == "__main__":
