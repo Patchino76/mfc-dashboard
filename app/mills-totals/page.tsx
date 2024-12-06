@@ -22,12 +22,16 @@ const MillsTotalsPage = () => {
   previousDate.setDate(currentDate.getDate() - 1);
 
   // Format dates at UTC midnight
-  const currentDateStr = new Date(currentDate.getTime() - (currentDate.getTimezoneOffset() * 60000))
+  const currentDateStr = new Date(
+    currentDate.getTime() - currentDate.getTimezoneOffset() * 60000
+  )
     .toISOString()
-    .split('T')[0];
-  const previousDateStr = new Date(previousDate.getTime() - (previousDate.getTimezoneOffset() * 60000))
+    .split("T")[0];
+  const previousDateStr = new Date(
+    previousDate.getTime() - previousDate.getTimezoneOffset() * 60000
+  )
     .toISOString()
-    .split('T')[0];
+    .split("T")[0];
 
   const { data: currentData } = useMillsByParameter(
     selectedParameter,
@@ -37,6 +41,16 @@ const MillsTotalsPage = () => {
     selectedParameter,
     previousDateStr
   );
+
+  // Add totals to both datasets
+  const addTotalsRow = (data: typeof currentData) => {
+    if (!data) return null;
+    const totalValue = data.reduce((sum, item) => sum + item.value, 0);
+    return [...data, { mill: "Общо", value: totalValue }];
+  };
+
+  const currentWithTotals = addTotalsRow(currentData);
+  const previousWithTotals = addTotalsRow(previousData);
 
   return (
     <div className="h-fit p-3 flex flex-row gap-3">
@@ -73,15 +87,15 @@ const MillsTotalsPage = () => {
         </CardContent>
       </Card>
 
-      {previousData && currentData && (
+      {previousWithTotals && currentWithTotals && (
         <Card className="flex-1 flex flex-col">
           <CardHeader>
-            <CardTitle>Разлики</CardTitle>
+            <CardTitle>Сравнителна таблица</CardTitle>
           </CardHeader>
           <CardContent className="flex-1">
             <ComparisonTable
-              previousData={previousData}
-              currentData={currentData}
+              previousData={previousWithTotals}
+              currentData={currentWithTotals}
             />
           </CardContent>
         </Card>

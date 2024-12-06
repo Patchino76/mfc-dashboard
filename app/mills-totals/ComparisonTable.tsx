@@ -82,18 +82,42 @@ export default function ComparisonTable({
 
           return (
             <TableRow key={prevMill.mill}>
-              <TableCell className="font-medium">{prevMill.mill}</TableCell>
-              <TableCell className="text-right">{prevMill.value}</TableCell>
-              <TableCell className={`text-right ${colorClass}`}>
-                {currentMill.value}
+              <TableCell
+                className={`font-medium ${
+                  prevMill.mill === "Общо" ? "font-bold" : ""
+                }`}
+              >
+                {prevMill.mill}
               </TableCell>
-              <TableCell className={`text-right ${colorClass}`}>
+              <TableCell
+                className={`text-right ${
+                  prevMill.mill === "Общо" ? "font-bold" : ""
+                }`}
+              >
+                {prevMill.value.toFixed(0)}
+              </TableCell>
+              <TableCell
+                className={`text-right ${colorClass} ${
+                  prevMill.mill === "Общо" ? "font-bold" : ""
+                }`}
+              >
+                {currentMill.value.toFixed(0)}
+              </TableCell>
+              <TableCell
+                className={`text-right ${colorClass} ${
+                  prevMill.mill === "Общо" ? "font-bold" : ""
+                }`}
+              >
                 <div className="flex items-center justify-end space-x-1">
                   {getArrowIcon(difference)}
                   <span>{Math.abs(difference).toFixed(1)}</span>
                 </div>
               </TableCell>
-              <TableCell className={`text-right ${colorClass}`}>
+              <TableCell
+                className={`text-right ${colorClass} ${
+                  prevMill.mill === "Общо" ? "font-bold" : ""
+                }`}
+              >
                 {percentChange}%
               </TableCell>
             </TableRow>
