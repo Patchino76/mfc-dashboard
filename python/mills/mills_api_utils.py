@@ -99,12 +99,12 @@ class MillsUtils(BaseModel):
                     Value,
                     ROW_NUMBER() OVER (PARTITION BY LoggerTagID 
                         ORDER BY CASE 
-                            WHEN IndexTime <= DATEADD(day, 1, CAST(? AS datetime)) THEN IndexTime 
+                            WHEN IndexTime <= DATEADD(hour, 28, CAST(? AS datetime)) THEN IndexTime 
                             ELSE NULL 
                         END DESC) as rn
                 FROM LoggerValues 
                 WHERE LoggerTagID IN ({})
-                AND IndexTime <= DATEADD(day, 1, CAST(? AS datetime))
+                AND IndexTime <= DATEADD(hour, 28, CAST(? AS datetime))
             )
             SELECT LoggerTagID, Value 
             FROM LastValues 

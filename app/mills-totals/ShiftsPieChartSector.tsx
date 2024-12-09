@@ -31,7 +31,7 @@ interface ShiftsPieChartProps {
   selectedShift: string;
 }
 
-export default function ShiftsPieChart({
+export default function ShiftsPieChartSector({
   data,
   selectedShift,
 }: ShiftsPieChartProps) {
