@@ -81,10 +81,13 @@ export default function ComparisonTable({
           const colorClass = getColorClass(difference, prevMill.value);
 
           return (
-            <TableRow key={prevMill.mill}>
+            <TableRow 
+              key={prevMill.mill}
+              className={`${prevMill.mill === "Общо" ? "border-t-2 border-gray-200 bg-gray-50 font-semibold" : ""}`}
+            >
               <TableCell
-                className={`font-medium ${
-                  prevMill.mill === "Общо" ? "font-bold" : ""
+                className={`${
+                  prevMill.mill === "Общо" ? "font-bold" : "font-medium"
                 }`}
               >
                 {prevMill.mill}
