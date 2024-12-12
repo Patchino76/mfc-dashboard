@@ -1,13 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import MillsTotals from "../components/MillsTotals";
-import ShiftsPieChartSector from "./ShiftsPieChartSector";
 import { useMillsByParameter } from "../hooks/useMills";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import CalendarArrows from "./CalendarArrows";
 import ComparisonTable from "./ComparisonTable";
-import { ShiftsPieChartSimple } from "./ShiftsPieChartSimple";
+import ShiftsPieChartSector from "./ShiftsPieChartSector";
+import ShiftsPieChartSimple from "./ShiftsPieChartSimple";
 
 const parameters = [
   { id: "shift1", label: "Смяна 1" },
@@ -137,7 +137,7 @@ const MillsTotalsPage = () => {
               ) : (
                 <ShiftsPieChartSimple
                   data={shiftsAggregates}
-                  selectedShift={selectedParameter}
+                  selectedParam={selectedParameter}
                 />
               )}
             </CardContent>

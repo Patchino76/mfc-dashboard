@@ -1,10 +1,5 @@
 "use client";
 
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
 import * as React from "react";
 import { Label, Pie, PieChart, Sector } from "recharts";
 
@@ -24,44 +19,85 @@ interface ShiftData {
   label: string;
 }
 
-const shiftsData: ShiftData[] = [
-  { shift: "shift1", value: 0, fill: "var(--color-shift1)", label: "Смяна 1" },
-  { shift: "shift2", value: 0, fill: "var(--color-shift2)", label: "Смяна 2" },
-  { shift: "shift3", value: 0, fill: "var(--color-shift3)", label: "Смяна 3" },
-];
-
 interface ShiftsPieChartProps {
   data: { shift: string; value: number }[];
-  selectedShift: string;
+  selectedParam: string;
 }
 
-export function ShiftsPieChartSimple({ data }: ShiftsPieChartProps) {
+export default function ShiftsPieChartSimple({
+  data,
+  selectedParam,
+}: ShiftsPieChartProps) {
   const id = "shifts-pie";
-  const chartConfig = {};
+  const updatedShiftsData = [
+    {
+      shift: "shift1",
+      value: data[0]?.value || 0,
+      fill: "var(--color-shift1)",
+      label: "Смяна 1",
+    },
+    {
+      shift: "shift2",
+      value: data[1]?.value || 0,
+      fill: "var(--color-shift2)",
+      label: "Смяна 2",
+    },
+    {
+      shift: "shift3",
+      value: data[2]?.value || 0,
+      fill: "var(--color-shift3)",
+      label: "Смяна 3",
+    },
+  ];
+
   return (
     <div data-chart={id} className="flex flex-col items-left ">
       <style>{styles}</style>
-      <div className="text-left mb-1">
-        <p className="text-sm text-muted-foreground">Преработка по смени [t]</p>
-      </div>
       <div className="">
-        <ChartContainer config={chartConfig}>
-          <PieChart width={170} height={200}>
-            <ChartTooltip
-              content={<ChartTooltipContent nameKey="value" hideLabel />}
+        <PieChart width={170} height={200}>
+          <Pie
+            data={updatedShiftsData} // Use updatedShiftsData here
+            dataKey="value"
+            nameKey="shift"
+            cx="50%"
+            cy="50%"
+            innerRadius={50}
+            outerRadius={70}
+            strokeWidth={5}
+          >
+            <Label
+              content={({ viewBox }) => {
+                if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                  const activeData =
+                    data[0]?.value + data[1]?.value + data[2]?.value || 0; // Example for accessing value
+                  return (
+                    <text
+                      x={viewBox.cx}
+                      y={viewBox.cy}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                    >
+                      <tspan
+                        x={viewBox.cx}
+                        y={viewBox.cy}
+                        className="fill-foreground text-3xl font-bold"
+                      >
+                        {activeData.toFixed(0)}
+                      </tspan>
+                      <tspan
+                        x={viewBox.cx}
+                        y={(viewBox.cy || 0) + 24}
+                        className="fill-muted-foreground"
+                      >
+                        Тотал
+                      </tspan>
+                    </text>
+                  );
+                }
+              }}
             />
-            <Pie
-              data={data}
-              dataKey="value"
-              nameKey="shift"
-              cx="50%"
-              cy="50%"
-              innerRadius={50}
-              outerRadius={70}
-              fill="hsl(var(--chart-1))"
-            />
-          </PieChart>
-        </ChartContainer>
+          </Pie>
+        </PieChart>
       </div>
     </div>
   );
