@@ -28,7 +28,7 @@ export default function ComparisonTable({
   };
 
   const getColorClass = (difference: number, previousValue: number) => {
-    const percentChange = (difference / previousValue) * 100;
+    const percChange = (difference / previousValue) * 100;
 
     if (difference === 0) return "bg-gray-100";
 
@@ -46,14 +46,14 @@ export default function ComparisonTable({
       return "900";
     };
 
-    const color = percentChange > 0 ? "lime" : "red";
-    const intensity = getIntensity(percentChange);
+    const color = difference > 0 ? "green" : "red";
+    const intensity = getIntensity(percChange);
     return `bg-${color}-${intensity}`;
   };
 
   const getArrowIcon = (difference: number) => {
     if (difference > 0) {
-      return <TrendingUp className="h-4 w-4 text-emerald-500" />;
+      return <TrendingUp className="h-4 w-4 text-green-500" />;
     } else if (difference < 0) {
       return <TrendingDown className="h-4 w-4 text-red-500" />;
     }
@@ -79,11 +79,14 @@ export default function ComparisonTable({
             currentMill
           );
           const colorClass = getColorClass(difference, prevMill.value);
-
           return (
-            <TableRow 
+            <TableRow
               key={prevMill.mill}
-              className={`${prevMill.mill === "Общо" ? "border-t-2 border-gray-200 bg-gray-50 font-semibold" : ""}`}
+              className={`${
+                prevMill.mill === "Общо"
+                  ? "border-t-2 border-gray-200 bg-gray-50 font-semibold"
+                  : ""
+              }`}
             >
               <TableCell
                 className={`${
