@@ -57,65 +57,60 @@ export function JKD({ data }: JKDProps) {
     Math.max(...data.map((d) => d.TotalEvents)) * 20,
   ];
   return (
-    <Card className="w-full max-w-4xl">
-      <CardHeader>
-        <CardTitle>Диаграма - Jack-Knife</CardTitle>
-        <CardDescription>Анализ на престоите по причини</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={500}>
-          <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-            <XAxis
-              type="number"
-              dataKey="MTTR"
-              name="MTTR"
-              domain={[xMin, xMax]}
-              label={{
-                value: "Средно време на възстановяване (MTTR) [часове]",
-                position: "bottom",
-                offset: 0,
-              }}
-            />
-            <YAxis
-              type="number"
-              dataKey="TotalEvents"
-              name="Total Events"
-              domain={[yMin, yMax]}
-              label={{
-                value: "Брой на престои",
-                angle: -90,
-                position: "insideLeft",
-              }}
-            />
-            <ZAxis type="number" dataKey={"TotalEvents"} range={range} />
-            <Tooltip cursor={{ strokeDasharray: "3 3" }} />
-            <Legend wrapperStyle={{ bottom: 1 }} />
-            <ReferenceLine
-              y={meanEvents + stdEvents}
-              label={{
-                value: "Праг на действие",
-                position: "top",
-                offset: 5,
-              }}
-              stroke="red"
-              strokeDasharray="3 3"
-            />
-            {data.map(
-              (entry, index) => (
-                console.log(entry),
-                (
-                  <Scatter
-                    key={index}
-                    name={entry.Reason}
-                    data={[entry]}
-                    fill={`hsl(${(index * 360) / data.length}, 70%, 50%)`}
-                  />
-                )
-              )
-            )}
-          </ScatterChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+    // <Card className="w-full max-w-4xl">
+    //   <CardHeader>
+    //     <CardTitle>Диаграма - Jack-Knife</CardTitle>
+    //     <CardDescription>Анализ на престоите по причини</CardDescription>
+    //   </CardHeader>
+    //   <CardContent>
+    <ResponsiveContainer width="100%" height={500}>
+      <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+        <XAxis
+          type="number"
+          dataKey="MTTR"
+          name="MTTR"
+          domain={[xMin, xMax]}
+          label={{
+            value: "Средно време на възстановяване (MTTR) [часове]",
+            position: "bottom",
+            offset: 0,
+          }}
+        />
+        <YAxis
+          type="number"
+          dataKey="TotalEvents"
+          name="Total Events"
+          domain={[yMin, yMax]}
+          label={{
+            value: "Брой на престои",
+            angle: -90,
+            position: "insideLeft",
+          }}
+        />
+        <ZAxis type="number" dataKey={"TotalEvents"} range={range} />
+        <Tooltip cursor={{ strokeDasharray: "3 3" }} />
+        <Legend wrapperStyle={{ bottom: 1 }} />
+        <ReferenceLine
+          y={meanEvents + stdEvents}
+          label={{
+            value: "Праг на действие",
+            position: "top",
+            offset: 5,
+          }}
+          stroke="red"
+          strokeDasharray="3 3"
+        />
+        {data.map((entry, index) => (
+          <Scatter
+            key={index}
+            name={entry.Reason}
+            data={[entry]}
+            fill={`hsl(${(index * 360) / data.length}, 70%, 50%)`}
+          />
+        ))}
+      </ScatterChart>
+    </ResponsiveContainer>
+    //   </CardContent>
+    // </Card>
   );
 }

@@ -17,13 +17,6 @@ const parameters = [
   { id: "ore", label: "Руда" },
 ];
 
-// Sample shift data for testing
-// const fakeShiftData = [
-//   { shift: "Смяна 1", value: 1250 },
-//   { shift: "Смяна 2", value: 980 },
-//   { shift: "Смяна 3", value: 1100 },
-// ];
-
 const MillsTotalsPage = () => {
   const [selectedParameter, setSelectedParameter] = useState("ore");
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -67,8 +60,6 @@ const MillsTotalsPage = () => {
     ];
   };
   const shiftsAggregates = getShiftsAggregates();
-  // console.log(shiftsAggregates);
-  // console.log("fake", fakeShiftData);
 
   // Add totals to both datasets
   const addTotalsRow = (data: typeof currentData) => {

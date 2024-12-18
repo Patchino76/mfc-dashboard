@@ -1,4 +1,5 @@
 import { JKD } from "./JKD";
+import ParetoDtSst from "./ParetoDtSst";
 
 const sampleData = [
   { Reason: "Механо", MTTR: 2.5, TotalEvents: 30 },
@@ -8,10 +9,11 @@ const sampleData = [
   { Reason: "ППР", MTTR: 4.5, TotalEvents: 15 },
 ];
 
-export default function SstDowntimeAnalysis() {
+export default function SstDowntimeAnalysisPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <JKD data={sampleData} />
+      {/* <JKD data={sampleData} /> */}
+      <ParetoDtSst sampleData={sampleData} />
     </main>
   );
 }
