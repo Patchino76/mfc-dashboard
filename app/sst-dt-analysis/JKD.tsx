@@ -2,13 +2,6 @@
 
 import { useMemo } from "react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   ScatterChart,
   Scatter,
   XAxis,
@@ -19,21 +12,35 @@ import {
   Label,
   ReferenceLine,
   ResponsiveContainer,
+  TooltipProps,
 } from "recharts";
 
 interface DataPoint {
-  Reason: string;
-  MTTR: number;
-  TotalEvents: number;
+  reason: string;
+  mttr: number;
+  totalEvents: number;
 }
 
 interface JKDProps {
   data: DataPoint[];
 }
 
+const CustomTooltip = ({ active, payload }: TooltipProps<any, any>) => {
+  if (active && payload && payload.length) {
+    const { reason, totalEvents } = payload[0].payload; // Adjust based on your data structure
+    return (
+      <div className="border border-blue-500 rounded-lg bg-white p-4 shadow-lg">
+        <p className="text-blue-500">Причина: {reason}</p>
+        <p className="text-purple-500">Събития: {totalEvents} бр.</p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export function JKD({ data }: JKDProps) {
   const { meanEvents, stdEvents, xMin, xMax, yMin, yMax } = useMemo(() => {
-    const totalEvents = data.map((d) => d.TotalEvents);
+    const totalEvents = data.map((d) => d.totalEvents);
     const meanEvents =
       totalEvents.reduce((a, b) => a + b, 0) / totalEvents.length;
     const stdEvents = Math.sqrt(
@@ -41,8 +48,8 @@ export function JKD({ data }: JKDProps) {
         totalEvents.length
     );
 
-    const xValues = data.map((d) => d.MTTR);
-    const yValues = data.map((d) => d.TotalEvents);
+    const xValues = data.map((d) => d.mttr);
+    const yValues = data.map((d) => d.totalEvents);
     const paddingX = 0.2;
     const paddingY = 5;
     const xMin = Math.min(...xValues) - paddingX;
@@ -53,21 +60,15 @@ export function JKD({ data }: JKDProps) {
     return { meanEvents, stdEvents, xMin, xMax, yMin, yMax };
   }, [data]);
   const range = [
-    Math.min(...data.map((d) => d.TotalEvents)) * 20,
-    Math.max(...data.map((d) => d.TotalEvents)) * 20,
+    Math.min(...data.map((d) => d.totalEvents)) * 20,
+    Math.max(...data.map((d) => d.totalEvents)) * 20,
   ];
   return (
-    // <Card className="w-full max-w-4xl">
-    //   <CardHeader>
-    //     <CardTitle>Диаграма - Jack-Knife</CardTitle>
-    //     <CardDescription>Анализ на престоите по причини</CardDescription>
-    //   </CardHeader>
-    //   <CardContent>
     <ResponsiveContainer width="100%" height={500}>
       <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
         <XAxis
           type="number"
-          dataKey="MTTR"
+          dataKey="mttr"
           name="MTTR"
           domain={[xMin, xMax]}
           label={{
@@ -78,8 +79,8 @@ export function JKD({ data }: JKDProps) {
         />
         <YAxis
           type="number"
-          dataKey="TotalEvents"
-          name="Total Events"
+          dataKey="totalEvents"
+          name="Брой събития"
           domain={[yMin, yMax]}
           label={{
             value: "Брой на престои",
@@ -87,8 +88,8 @@ export function JKD({ data }: JKDProps) {
             position: "insideLeft",
           }}
         />
-        <ZAxis type="number" dataKey={"TotalEvents"} range={range} />
-        <Tooltip cursor={{ strokeDasharray: "3 3" }} />
+        <ZAxis type="number" dataKey={"totalEvents"} range={range} />
+        <Tooltip content={<CustomTooltip />} />
         <Legend wrapperStyle={{ bottom: 1 }} />
         <ReferenceLine
           y={meanEvents + stdEvents}
@@ -103,14 +104,12 @@ export function JKD({ data }: JKDProps) {
         {data.map((entry, index) => (
           <Scatter
             key={index}
-            name={entry.Reason}
+            name={entry.reason}
             data={[entry]}
             fill={`hsl(${(index * 360) / data.length}, 70%, 50%)`}
           />
         ))}
       </ScatterChart>
     </ResponsiveContainer>
-    //   </CardContent>
-    // </Card>
   );
 }
