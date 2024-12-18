@@ -37,7 +37,7 @@ const TreeStructureSST = ({ onSelect }: TreeStructureSSTProps) => {
   const treeItems = [
     {
       id: "1",
-      name: "Оборудване",
+      name: "Поток 1  ",
       icon: <Factory className="h-4 w-4 text-blue-600" />,
       children: [
         {
@@ -174,9 +174,9 @@ const TreeStructureSST = ({ onSelect }: TreeStructureSSTProps) => {
         <CardDescription>Йерархия на машини</CardDescription>
       </CardHeader>
       <CardContent>
-        <Tree 
-          items={treeItems} 
-          className="p-1" 
+        <Tree
+          items={treeItems}
+          className="p-1"
           defaultExpanded={false}
           selectedId={selectedId}
           onSelect={handleSelect}

@@ -1,3 +1,4 @@
+"use client";
 import { JKD } from "./JKD";
 import ParetoDtSst from "./ParetoDtSst";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,12 +16,7 @@ const sampleData = [
 
 export default function SstDowntimeAnalysisPage() {
   return (
-    // <main className="flex min-h-screen flex-col items-center justify-center p-24">
-    //   <JKD data={sampleData} />
-    //   <ParetoDtSst sampleData={sampleData} />
-    // </main>
     <div className="h-fit p-3 flex flex-col gap-3">
-      {/* <div className="flex flex-row gap-3"> */}
       <Card className="w-[60%] flex flex-col">
         <CardHeader className="flex flex-row items-center justify-between space-y-2 pb-0">
           <CardTitle className="text-2xl font-medium justify-between">
@@ -30,10 +26,9 @@ export default function SstDowntimeAnalysisPage() {
             <AudioWaveform className="scale-75" />
             <Switch
               checked={true}
-              // onCheckedChange={() => {}}
+              onCheckedChange={() => {}}
               className="scale-75"
             />
-
             <Clock className="scale-75" />
           </div>
         </CardHeader>
