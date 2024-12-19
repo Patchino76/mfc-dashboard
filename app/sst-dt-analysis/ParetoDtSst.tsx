@@ -67,7 +67,7 @@ const ParetoDtSst = ({ sampleData }: ParetoDtSstProps) => {
         <YAxis yAxisId="right" orientation="right" stroke="#ff7300" />
 
         <Tooltip content={<CustomTooltip />} />
-        <Legend />
+        <Legend wrapperStyle={{ bottom: -10 }} />
         <Bar dataKey="totalEvents" fill="#8884d8" yAxisId="left" />
         <Line
           type="monotone"

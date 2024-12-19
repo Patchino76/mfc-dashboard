@@ -60,8 +60,8 @@ export function JKD({ data }: JKDProps) {
     return { meanEvents, stdEvents, xMin, xMax, yMin, yMax };
   }, [data]);
   const range = [
-    Math.min(...data.map((d) => d.totalEvents)) * 20,
-    Math.max(...data.map((d) => d.totalEvents)) * 20,
+    Math.min(...data.map((d) => d.totalEvents)) * 40,
+    Math.max(...data.map((d) => d.totalEvents)) * 40,
   ];
   return (
     <ResponsiveContainer width="100%" height={700}>
@@ -90,7 +90,7 @@ export function JKD({ data }: JKDProps) {
         />
         <ZAxis type="number" dataKey={"totalEvents"} range={range} />
         <Tooltip content={<CustomTooltip />} />
-        <Legend wrapperStyle={{ bottom: 1 }} />
+        <Legend wrapperStyle={{ bottom: -10 }} />
         <ReferenceLine
           y={meanEvents + stdEvents}
           label={{

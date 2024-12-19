@@ -15,12 +15,13 @@ import {
 
 import { TreeItem, treeItems } from "./treeItems";
 import { ItemIcon } from "./ItemIcon";
+import { useTreeFlowItems } from "../hooks/store";
 
 type TreeProps = React.HTMLAttributes<HTMLDivElement> & {
   data: TreeItem[];
   level?: number;
   selectedItem?: string | null;
-  onSelectItem?: (item: string | null) => void;
+  onSelectItem?: (item: string) => void;
 };
 
 export function FlowTree({
@@ -40,8 +41,8 @@ export function FlowTree({
           level={level}
           isSelected={selectedItem === item.name}
           onSelect={() => onSelectItem && onSelectItem(item.name)}
-          selectedItem={selectedItem}
-          onSelectItem={onSelectItem}
+          //   selectedItem={selectedItem}
+          //   onSelectItem={onSelectItem}
         />
       ))}
     </div>
@@ -53,16 +54,17 @@ function TreeItemComponent({
   level,
   isSelected,
   onSelect,
-  selectedItem,
-  onSelectItem,
-}: {
+}: //   selectedItem,
+//   onSelectItem,
+{
   item: TreeItem;
   level: number;
   isSelected: boolean;
   onSelect: () => void;
-  selectedItem?: string | null;
-  onSelectItem?: (item: string | null) => void;
+  //   selectedItem?: string | null;
+  //   onSelectItem?: (item: string | null) => void;
 }) {
+  const { selectedItem, setSelectedItem } = useTreeFlowItems();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleSelect = (e: React.MouseEvent) => {
@@ -110,7 +112,7 @@ function TreeItemComponent({
           data={item.children}
           level={level + 1}
           selectedItem={selectedItem}
-          onSelectItem={onSelectItem}
+          onSelectItem={setSelectedItem}
         />
       )}
     </div>
