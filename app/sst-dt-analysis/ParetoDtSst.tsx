@@ -56,7 +56,7 @@ const ParetoDtSst = ({ sampleData }: ParetoDtSstProps) => {
   }
 
   return (
-    <ResponsiveContainer width="100%" height={500}>
+    <ResponsiveContainer width="100%" height={700}>
       <ComposedChart
         data={processedData}
         margin={{ top: 20, right: 20, bottom: 20, left: 20 }}

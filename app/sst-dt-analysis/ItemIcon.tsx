@@ -1,9 +1,9 @@
 import {
   Box,
   Cog,
-  CombineIcon as Conveyor,
+  Route,
   Droplet,
-  Filter,
+  ListFilter,
   Forklift,
   Gauge,
   Hammer,
@@ -12,25 +12,27 @@ import {
   Pipette,
   PowerIcon as Pump,
   Siren,
-  Truck,
+  Repeat,
 } from "lucide-react";
 
+import ConveyorIcon from "Icons/conveyor_belt.png";
+
 const iconMap: { [key: string]: LucideIcon } = {
-  Питател: Truck,
-  лента: Conveyor,
-  сито: Filter,
+  Питател: Repeat,
+  лента: Route,
+  сито: ListFilter,
   Течка: Droplet,
   Трошачка: Hammer,
   "Маслена станция": Gauge,
   ССТ: Siren,
   ПВ: Pump,
   МБ: Forklift,
-  "Захранваща лента": Conveyor,
+  "Захранваща лента": Route,
   Поток: Pipette,
 };
 
 export function ItemIcon({ name, ...props }: { name: string }) {
   const Icon =
     Object.entries(iconMap).find(([key]) => name.includes(key))?.[1] || Box;
-  return <Icon {...props} />;
+  return <Icon {...props} className="h-4 w-4  mr-2" />;
 }

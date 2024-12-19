@@ -2,9 +2,16 @@
 import { JKD } from "./JKD";
 import ParetoDtSst from "./ParetoDtSst";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { AudioWaveform, Clock } from "lucide-react";
+import { FlowTreeCard } from "./FlowTree";
 
 const sampleData = [
   { reason: "Механо", mttr: 2.5, totalEvents: 30 },
@@ -16,8 +23,12 @@ const sampleData = [
 
 export default function SstDowntimeAnalysisPage() {
   return (
-    <div className="h-fit p-3 flex flex-col gap-3">
-      <Card className="w-[60%] flex flex-col">
+    <div className="p-3 flex flex-row gap-3">
+      <div className="w-[15%] flex flex-col gap-3">
+        <FlowTreeCard />
+      </div>
+
+      <Card className="w-[85%]  flex flex-col">
         <CardHeader className="flex flex-row items-center justify-between space-y-2 pb-0">
           <CardTitle className="text-2xl font-medium justify-between">
             ССТ - Анализ на престои

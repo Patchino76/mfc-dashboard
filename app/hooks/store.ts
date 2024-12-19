@@ -1,8 +1,5 @@
 import { create } from "zustand";
 
-// interface State {
-//   setPoint: number;
-// }
 interface SpStore {
   setPoint: number;
   increase: () => void;
@@ -18,3 +15,14 @@ const useSetPoint = create<SpStore>((set) => ({
 }));
 
 export default useSetPoint;
+
+// ---------------------------------- Tree SST Flow Component -----------------------------------
+interface TreeFlowItemsProps {
+  selectedItem: string;
+  setSelectedItem: (item: string) => void;
+}
+
+export const useTreeFlowItems = create<TreeFlowItemsProps>((set) => ({
+  selectedItem: "",
+  setSelectedItem: (item: string) => set({ selectedItem: item }),
+}));

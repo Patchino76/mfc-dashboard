@@ -20,8 +20,7 @@ type TreeProps = React.HTMLAttributes<HTMLDivElement> & {
   data: TreeItem[];
   level?: number;
   selectedItem?: string | null;
-  onSelectItem?: (item: string | null, parent: string | null) => void;
-  selectedParent?: string | null;
+  onSelectItem?: (item: string | null) => void;
 };
 
 export function FlowTree({
@@ -30,7 +29,6 @@ export function FlowTree({
   level = 0,
   selectedItem,
   onSelectItem,
-  selectedParent,
   ...props
 }: TreeProps) {
   return (
@@ -41,14 +39,9 @@ export function FlowTree({
           item={item}
           level={level}
           isSelected={selectedItem === item.name}
-          onSelect={(itemName) =>
-            onSelectItem &&
-            onSelectItem(itemName, level === 0 ? item.name : selectedParent)
-          }
+          onSelect={() => onSelectItem && onSelectItem(item.name)}
           selectedItem={selectedItem}
           onSelectItem={onSelectItem}
-          selectedParent={selectedParent}
-          isExpanded={level === 0 && item.name === selectedParent}
         />
       ))}
     </div>
@@ -62,27 +55,19 @@ function TreeItemComponent({
   onSelect,
   selectedItem,
   onSelectItem,
-  selectedParent,
-  isExpanded: initialIsExpanded,
 }: {
   item: TreeItem;
   level: number;
   isSelected: boolean;
-  onSelect: (itemName: string) => void;
+  onSelect: () => void;
   selectedItem?: string | null;
-  onSelectItem?: (item: string | null, parent: string | null) => void;
-  selectedParent?: string | null;
-  isExpanded: boolean;
+  onSelectItem?: (item: string | null) => void;
 }) {
-  const [isOpen, setIsOpen] = React.useState(initialIsExpanded);
-
-  React.useEffect(() => {
-    setIsOpen(initialIsExpanded);
-  }, [initialIsExpanded]);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const handleSelect = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onSelect(item.name);
+    onSelect();
   };
 
   const handleToggle = (e: React.MouseEvent) => {
@@ -115,11 +100,10 @@ function TreeItemComponent({
             )}
           </Button>
         )}
-        <ItemIcon
-          name={item.name}
-          className={cn("mr-2 h-4 w-4", isSelected && "text-primary")}
-        />
-        <span>{item.name}</span>
+        <div className="flex items-center">
+          <ItemIcon name={item.name} />
+          <span>{item.name}</span>
+        </div>
       </div>
       {isOpen && item.children && (
         <FlowTree
@@ -127,7 +111,6 @@ function TreeItemComponent({
           level={level + 1}
           selectedItem={selectedItem}
           onSelectItem={onSelectItem}
-          selectedParent={selectedParent}
         />
       )}
     </div>
@@ -136,38 +119,25 @@ function TreeItemComponent({
 
 export function FlowTreeCard() {
   const [selectedItem, setSelectedItem] = React.useState<string | null>(null);
-  const [selectedParent, setSelectedParent] = React.useState<string | null>(
-    null
-  );
-
-  const handleSelectItem = (item: string | null, parent: string | null) => {
-    setSelectedItem(item);
-    setSelectedParent(parent);
-  };
 
   return (
-    <Card className="w-full max-w-3xl">
+    <Card className="w-full max-w-3xl ">
       <CardHeader>
-        <CardTitle>Flow Tree</CardTitle>
-        <CardDescription>13 Поток and their components</CardDescription>
+        <CardTitle>Структура</CardTitle>
+        <CardDescription>Потоци и компоненти</CardDescription>
       </CardHeader>
       <CardContent>
         <FlowTree
           data={treeItems}
-          className="max-h-[600px] overflow-auto"
+          className="h-[750px] overflow-auto"
           selectedItem={selectedItem}
-          onSelectItem={handleSelectItem}
-          selectedParent={selectedParent}
+          onSelectItem={setSelectedItem}
         />
-        {selectedItem && (
+        {/* {selectedItem && (
           <div className="mt-4 p-2 bg-secondary rounded-md">
-            <p>
-              {selectedParent && selectedParent !== selectedItem
-                ? `Selected: ${selectedParent} - ${selectedItem}`
-                : `Selected: ${selectedItem}`}
-            </p>
+            <p>Selected Item: {selectedItem}</p>
           </div>
-        )}
+        )} */}
       </CardContent>
     </Card>
   );
