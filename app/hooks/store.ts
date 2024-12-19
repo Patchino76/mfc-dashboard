@@ -16,7 +16,7 @@ const useSetPoint = create<SpStore>((set) => ({
 
 export default useSetPoint;
 
-// ---------------------------------- Tree SST Flow Component -----------------------------------
+// ---------------------------------- Tree SST Downtime Analysis Page -----------------------------------
 interface TreeFlowItemsProps {
   selectedItem: string;
   setSelectedItem: (item: string) => void;
@@ -25,4 +25,16 @@ interface TreeFlowItemsProps {
 export const useTreeFlowItems = create<TreeFlowItemsProps>((set) => ({
   selectedItem: "",
   setSelectedItem: (item: string) => set({ selectedItem: item }),
+}));
+
+interface DtAnalysisTypeProps {
+  type: string;
+  label: string;
+  setType: (type: string, label: string) => void;
+}
+
+export const useDtAnalysisType = create<DtAnalysisTypeProps>((set) => ({
+  type: "frequency",
+  label: "Събития",
+  setType: (type: string, label: string) => set({ type, label }),
 }));

@@ -1,6 +1,6 @@
 import {
   Box,
-  Cog,
+  Workflow,
   Route,
   Droplet,
   ListFilter,
@@ -28,7 +28,7 @@ const iconMap: { [key: string]: LucideIcon } = {
   ПВ: Pump,
   МБ: Forklift,
   "Захранваща лента": Route,
-  Поток: Pipette,
+  Поток: Workflow,
 };
 
 export function ItemIcon({ name, ...props }: { name: string }) {

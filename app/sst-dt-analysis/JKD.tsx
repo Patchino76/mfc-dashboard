@@ -14,6 +14,7 @@ import {
   ResponsiveContainer,
   TooltipProps,
 } from "recharts";
+import { DtSstProps } from "./ParetoDtSst";
 
 interface DataPoint {
   reason: string;
@@ -27,41 +28,46 @@ interface JKDProps {
 
 const CustomTooltip = ({ active, payload }: TooltipProps<any, any>) => {
   if (active && payload && payload.length) {
-    const { reason, totalEvents } = payload[0].payload; // Adjust based on your data structure
+    const { reason, mttr, total, label, unit } = payload[0].payload; // Adjust based on your data structure
     return (
       <div className="border border-blue-500 rounded-lg bg-white p-4 shadow-lg">
-        <p className="text-blue-500">Причина: {reason}</p>
-        <p className="text-purple-500">Събития: {totalEvents} бр.</p>
+        <p className="text-blue-500">Категория: {reason}</p>
+        <p className="text-purple-500">
+          {label} {total} {unit}
+        </p>
+        <p className="text-orange-500">MTTR: {mttr.toFixed(1)} часа</p>
       </div>
     );
   }
   return null;
 };
 
-export function JKD({ data }: JKDProps) {
-  const { meanEvents, stdEvents, xMin, xMax, yMin, yMax } = useMemo(() => {
-    const totalEvents = data.map((d) => d.totalEvents);
-    const meanEvents =
-      totalEvents.reduce((a, b) => a + b, 0) / totalEvents.length;
-    const stdEvents = Math.sqrt(
-      totalEvents.reduce((sq, n) => sq + Math.pow(n - meanEvents, 2), 0) /
-        totalEvents.length
-    );
+export function JKD({ sampleData }: DtSstProps) {
+  const { meanMttr, meanEvents, stdEvents, xMin, xMax, yMin, yMax } =
+    useMemo(() => {
+      const total = sampleData.map((d) => d.total);
+      const meanMttr =
+        sampleData.reduce((sum, d) => sum + d.mttr, 0) / sampleData.length;
+      const meanEvents = total.reduce((a, b) => a + b, 0) / total.length;
+      const stdEvents = Math.sqrt(
+        total.reduce((sq, n) => sq + Math.pow(n - meanEvents, 2), 0) /
+          total.length
+      );
 
-    const xValues = data.map((d) => d.mttr);
-    const yValues = data.map((d) => d.totalEvents);
-    const paddingX = 0.2;
-    const paddingY = 5;
-    const xMin = Math.min(...xValues) - paddingX;
-    const xMax = Math.max(...xValues) + paddingX;
-    const yMin = Math.min(...yValues) - paddingY;
-    const yMax = Math.max(...yValues) + paddingY;
+      const xValues = sampleData.map((d) => d.mttr);
+      const yValues = sampleData.map((d) => d.total);
+      const paddingX = 0.2;
+      const paddingY = 5;
+      const xMin = Math.min(...xValues) - paddingX;
+      const xMax = Math.max(...xValues) + paddingX;
+      const yMin = Math.min(...yValues) - paddingY;
+      const yMax = Math.max(...yValues) + paddingY;
 
-    return { meanEvents, stdEvents, xMin, xMax, yMin, yMax };
-  }, [data]);
+      return { meanMttr, meanEvents, stdEvents, xMin, xMax, yMin, yMax };
+    }, [sampleData]);
   const range = [
-    Math.min(...data.map((d) => d.totalEvents)) * 40,
-    Math.max(...data.map((d) => d.totalEvents)) * 40,
+    Math.min(...sampleData.map((d) => d.total)) * 40,
+    Math.max(...sampleData.map((d) => d.total)) * 40,
   ];
   return (
     <ResponsiveContainer width="100%" height={700}>
@@ -72,41 +78,51 @@ export function JKD({ data }: JKDProps) {
           name="MTTR"
           domain={[xMin, xMax]}
           label={{
-            value: "Средно време на възстановяване (MTTR) [часове]",
+            value: "Средно време на отстранване (MTTR) в часове",
             position: "bottom",
             offset: 0,
           }}
         />
         <YAxis
           type="number"
-          dataKey="totalEvents"
+          dataKey="total"
           name="Брой събития"
           domain={[yMin, yMax]}
           label={{
-            value: "Брой на престои",
+            value: sampleData[0].label + " " + sampleData[0].unit,
             angle: -90,
             position: "insideLeft",
           }}
         />
-        <ZAxis type="number" dataKey={"totalEvents"} range={range} />
+        <ZAxis type="number" dataKey={"total"} range={range} />
         <Tooltip content={<CustomTooltip />} />
         <Legend wrapperStyle={{ bottom: -10 }} />
         <ReferenceLine
+          x={meanMttr}
+          label={{
+            // value: "Праг на действие",
+            position: "top",
+            offset: 5,
+          }}
+          stroke="blue"
+          strokeDasharray="3 3"
+        />
+        <ReferenceLine
           y={meanEvents + stdEvents}
           label={{
-            value: "Праг на действие",
+            // value: "Праг на действие",
             position: "top",
             offset: 5,
           }}
           stroke="red"
           strokeDasharray="3 3"
         />
-        {data.map((entry, index) => (
+        {sampleData.map((entry, index) => (
           <Scatter
             key={index}
             name={entry.reason}
             data={[entry]}
-            fill={`hsl(${(index * 360) / data.length}, 70%, 50%)`}
+            fill={`hsl(${(index * 360) / sampleData.length}, 70%, 50%)`}
           />
         ))}
       </ScatterChart>

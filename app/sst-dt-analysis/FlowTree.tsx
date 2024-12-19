@@ -41,8 +41,6 @@ export function FlowTree({
           level={level}
           isSelected={selectedItem === item.name}
           onSelect={() => onSelectItem && onSelectItem(item.name)}
-          //   selectedItem={selectedItem}
-          //   onSelectItem={onSelectItem}
         />
       ))}
     </div>
@@ -54,15 +52,11 @@ function TreeItemComponent({
   level,
   isSelected,
   onSelect,
-}: //   selectedItem,
-//   onSelectItem,
-{
+}: {
   item: TreeItem;
   level: number;
   isSelected: boolean;
   onSelect: () => void;
-  //   selectedItem?: string | null;
-  //   onSelectItem?: (item: string | null) => void;
 }) {
   const { selectedItem, setSelectedItem } = useTreeFlowItems();
   const [isOpen, setIsOpen] = React.useState(false);

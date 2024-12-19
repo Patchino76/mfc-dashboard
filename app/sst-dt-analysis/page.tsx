@@ -12,20 +12,23 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { AudioWaveform, Clock } from "lucide-react";
 import { FlowTreeCard } from "./FlowTree";
-import { useTreeFlowItems } from "../hooks/store";
+import { useDtAnalysisType, useTreeFlowItems } from "../hooks/store";
 import { useEffect, useState } from "react";
 
 const sampleData = [
-  { reason: "Механо", mttr: 2.5, totalEvents: 30 },
-  { reason: "Електро", mttr: 1.8, totalEvents: 55 },
-  { reason: "Технологични", mttr: 3.2, totalEvents: 20 },
-  { reason: "Системни", mttr: 0.9, totalEvents: 70 },
-  { reason: "ППР", mttr: 4.5, totalEvents: 10 },
+  { reason: "Механо", mttr: 2.5, totalEvents: 30, totalDowntime: 75 },
+  { reason: "Електро", mttr: 1.8, totalEvents: 55, totalDowntime: 99 },
+  { reason: "Технологични", mttr: 3.2, totalEvents: 20, totalDowntime: 64 },
+  { reason: "Системни", mttr: 0.9, totalEvents: 70, totalDowntime: 63 },
+  { reason: "ППР", mttr: 4.5, totalEvents: 10, totalDowntime: 45 },
 ];
 
 export default function SstDowntimeAnalysisPage() {
   const { selectedItem } = useTreeFlowItems();
-  const [downtimeData, setDowntimeData] = useState(sampleData);
+  const { type, label, setType } = useDtAnalysisType();
+  const [downtimeData, setDowntimeData] = useState([
+    { reason: "", mttr: 0, total: 0, label: "", unit: "" },
+  ]);
 
   useEffect(() => {
     const modifySampleData = () => {
@@ -36,14 +39,19 @@ export default function SstDowntimeAnalysisPage() {
             2
           )
         ), // Randomly add or subtract up to 1
-        totalEvents: item.totalEvents + Math.floor(Math.random() * 5), // Randomly add 0 to 4
+        total:
+          type === "downtime"
+            ? item.totalDowntime + Math.floor(Math.random() * 5)
+            : item.totalEvents + Math.floor(Math.random() * 5),
+        label: type === "downtime" ? "Продължителност" : "Събития",
+        unit: type === "downtime" ? "часа" : "бр.",
       }));
       console.log(modifiedData);
       setDowntimeData(modifiedData);
     };
 
     modifySampleData();
-  }, [selectedItem]);
+  }, [selectedItem, type]);
 
   return (
     <div className="p-3 flex flex-row gap-3">
@@ -59,8 +67,12 @@ export default function SstDowntimeAnalysisPage() {
           <div className="flex items-center gap-2">
             <AudioWaveform className="scale-75" />
             <Switch
-              checked={true}
-              onCheckedChange={() => {}}
+              checked={type === "frequency"}
+              onCheckedChange={() => {
+                if (type === "frequency")
+                  setType("downtime", "Продължителност");
+                else setType("frequency", "Събития");
+              }}
               className="scale-75"
             />
             <Clock className="scale-75" />
@@ -76,7 +88,7 @@ export default function SstDowntimeAnalysisPage() {
               <ParetoDtSst sampleData={downtimeData} />
             </TabsContent>
             <TabsContent value="jdk">
-              <JKD data={downtimeData} />
+              <JKD sampleData={downtimeData} />
             </TabsContent>
           </Tabs>
         </CardContent>
