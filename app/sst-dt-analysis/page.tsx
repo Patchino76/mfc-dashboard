@@ -14,6 +14,7 @@ import { AudioWaveform, Clock } from "lucide-react";
 import { FlowTreeCard } from "./FlowTree";
 import { useDtAnalysisType, useTreeFlowItems } from "../hooks/store";
 import { useEffect, useState } from "react";
+import TabularData from "./TabularData";
 
 const sampleData = [
   { reason: "Механо", mttr: 2.5, totalEvents: 30, totalDowntime: 75 },
@@ -80,15 +81,19 @@ export default function SstDowntimeAnalysisPage() {
         </CardHeader>
         <CardContent className="flex-1 pt-3">
           <Tabs defaultValue="pareto">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="pareto">Парето</TabsTrigger>
               <TabsTrigger value="jdk">JKD</TabsTrigger>
+              <TabsTrigger value="table">Таблично</TabsTrigger>
             </TabsList>
             <TabsContent value="pareto">
               <ParetoDtSst sampleData={downtimeData} />
             </TabsContent>
             <TabsContent value="jdk">
               <JKD sampleData={downtimeData} />
+            </TabsContent>
+            <TabsContent value="table">
+              <TabularData />
             </TabsContent>
           </Tabs>
         </CardContent>

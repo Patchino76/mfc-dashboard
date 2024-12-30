@@ -50,7 +50,7 @@ def get_reg_plot(commons: ApiDependancies = Depends()):
 def get_kde_densities(commons: ApiDependancies = Depends()):
     print("endpoint kde called with commons", commons)
     buf = commons.get_kde_plot(commons.tags, commons.sp)
-
+  
     return Response(content=buf.getvalue(), media_type="image/png")
 
 @app.get('/sst-downtimes')
