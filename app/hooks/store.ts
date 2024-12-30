@@ -18,13 +18,13 @@ export default useSetPoint;
 
 // ---------------------------------- Tree SST Downtime Analysis Page -----------------------------------
 interface TreeFlowItemsProps {
-  selectedItem: string;
-  setSelectedItem: (item: string) => void;
+  selectedTreeItem: string;
+  setSelectedTreeItem: (item: string) => void;
 }
 
 export const useTreeFlowItems = create<TreeFlowItemsProps>((set) => ({
-  selectedItem: "",
-  setSelectedItem: (item: string) => set({ selectedItem: item }),
+  selectedTreeItem: "",
+  setSelectedTreeItem: (item: string) => set({ selectedTreeItem: item }),
 }));
 
 interface DtAnalysisTypeProps {

@@ -9,52 +9,51 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useEffect, useState, useRef } from "react";
+import { DowntimeFullEntry } from "./page";
 
-interface DowntimeEntry {
-  startTime: string;
-  endTime: string;
-  duration: number;
-  type: string;
-}
-const downtimeTypes: string[] = ["механо", "електро", "технологични", "ппр"];
+// interface DowntimeEntry {
+//   startTime: string;
+//   endTime: string;
+//   duration: number;
+//   type: string;
+// }
+// const downtimeTypes: string[] = ["механо", "електро", "технологични", "ппр"];
 
-const tags = [
-  "SST_FB_LONG_BELT_STR1",
-  "SST_FB_LONG_BELT_STR2",
-  "SST_FB_LONG_BELT_STR3",
-  "SST_FB_LONG_BELT_STR4",
-];
-const currentDate = new Date();
-const pastDate = new Date(currentDate.getTime());
-pastDate.setDate(pastDate.getDate() - 1);
+// const tags = [
+//   "SST_FB_LONG_BELT_STR1",
+//   "SST_FB_LONG_BELT_STR2",
+//   "SST_FB_LONG_BELT_STR3",
+//   "SST_FB_LONG_BELT_STR4",
+// ];
+// const currentDate = new Date();
+// const pastDate = new Date(currentDate.getTime());
+// pastDate.setDate(pastDate.getDate() - 1);
 
-const TabularData = () => {
-  const [selectedTag, setSelectedTag] = useState<string>(
-    "SST_FB_LONG_BELT_STR2"
-  );
-  const { data: downtimes = [] } = useSST({
-    tag: selectedTag,
-    start: pastDate.toISOString(),
-    end: currentDate.toISOString(),
-  });
-  console.log(pastDate, currentDate);
+const TabularData = ({ entries }: { entries: DowntimeFullEntry[] }) => {
+  //   const [selectedTag, setSelectedTag] = useState<string>(
+  //     "SST_FB_LONG_BELT_STR2"
+  //   );
+  //   const { data: downtimes = [] } = useSST({
+  //     tag: selectedTag,
+  //     start: pastDate.toISOString(),
+  //     end: currentDate.toISOString(),
+  //   });
 
-  const [entries, setEntries] = useState<DowntimeEntry[]>([]);
+  //   const [entries, setEntries] = useState<DowntimeEntry[]>([]);
 
   // Initialize entries when downtimes data is loaded
-  useEffect(() => {
-    if (downtimes?.length > 0) {
-      setEntries(
-        downtimes.map(([start, end, duration]) => ({
-          startTime: start,
-          endTime: end,
-          duration: duration,
-          type: downtimeTypes[Math.floor(Math.random() * downtimeTypes.length)],
-        }))
-      );
-    }
-  }, [downtimes]);
+  //   useEffect(() => {
+  //     if (downtimes?.length > 0) {
+  //       setEntries(
+  //         downtimes.map(([start, end, duration]) => ({
+  //           startTime: start,
+  //           endTime: end,
+  //           duration: duration,
+  //           type: downtimeTypes[Math.floor(Math.random() * downtimeTypes.length)],
+  //         }))
+  //       );
+  //     }
+  //   }, [downtimes]);
 
   return (
     <div className="container mx-auto py-8">

@@ -29,7 +29,7 @@ export interface DtSstProps {
 const CustomTooltip = ({ active, payload }: TooltipProps<any, any>) => {
   if (active && payload && payload.length) {
     const { reason, total, cumulative, label, unit } = payload[0].payload; // Adjust based on your data structure
-    console.log(payload[0].payload);
+    // console.log(payload[0].payload);
     return (
       <div className="border border-blue-500 rounded-lg bg-white p-4 shadow-lg">
         <p className="text-blue-500">Категория: {reason}</p>

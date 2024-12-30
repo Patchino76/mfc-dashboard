@@ -58,7 +58,10 @@ function TreeItemComponent({
   isSelected: boolean;
   onSelect: () => void;
 }) {
-  const { selectedItem, setSelectedItem } = useTreeFlowItems();
+  const {
+    selectedTreeItem: selectedItem,
+    setSelectedTreeItem: setSelectedItem,
+  } = useTreeFlowItems();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleSelect = (e: React.MouseEvent) => {
@@ -129,11 +132,11 @@ export function FlowTreeCard() {
           selectedItem={selectedItem}
           onSelectItem={setSelectedItem}
         />
-        {/* {selectedItem && (
+        {selectedItem && (
           <div className="mt-4 p-2 bg-secondary rounded-md">
             <p>Selected Item: {selectedItem}</p>
           </div>
-        )} */}
+        )}
       </CardContent>
     </Card>
   );

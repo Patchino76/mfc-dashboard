@@ -15,6 +15,25 @@ import { FlowTreeCard } from "./FlowTree";
 import { useDtAnalysisType, useTreeFlowItems } from "../hooks/store";
 import { useEffect, useState } from "react";
 import TabularData from "./TabularData";
+import { useSST } from "../hooks/useSST";
+
+export interface DowntimeFullEntry {
+  startTime: string;
+  endTime: string;
+  duration: number;
+  type: string;
+}
+const downtimeTypes: string[] = ["механо", "електро", "технологични", "ппр"];
+const sstTags = [
+  "SST_FB_LONG_BELT_STR1",
+  "SST_FB_LONG_BELT_STR2",
+  "SST_FB_LONG_BELT_STR3",
+  "SST_FB_LONG_BELT_STR4",
+];
+
+const currentDate = new Date();
+const pastDate = new Date(currentDate.getTime());
+pastDate.setDate(pastDate.getDate() - 1);
 
 const sampleData = [
   { reason: "Механо", mttr: 2.5, totalEvents: 30, totalDowntime: 75 },
@@ -25,7 +44,7 @@ const sampleData = [
 ];
 
 export default function SstDowntimeAnalysisPage() {
-  const { selectedItem } = useTreeFlowItems();
+  const { selectedTreeItem: selectedItem } = useTreeFlowItems();
   const { type, label, setType } = useDtAnalysisType();
   const [downtimeData, setDowntimeData] = useState([
     { reason: "", mttr: 0, total: 0, label: "", unit: "" },
@@ -47,12 +66,45 @@ export default function SstDowntimeAnalysisPage() {
         label: type === "downtime" ? "Продължителност" : "Събития",
         unit: type === "downtime" ? "часа" : "бр.",
       }));
-      console.log(modifiedData);
+      // console.log(modifiedData);
       setDowntimeData(modifiedData);
     };
 
     modifySampleData();
   }, [selectedItem, type]);
+
+  // tree handling changes -------------------------------------
+  // const [selectedTreeItem, setSelectedTreeItem] = useState<string | null>(null);
+  const { selectedTreeItem } = useTreeFlowItems();
+  console.log(selectedTreeItem);
+
+  //tabular data ------------------------------------------------
+
+  const [selectedTag, setSelectedTag] = useState<string>(
+    "SST_FB_LONG_BELT_STR2"
+  );
+  const { data: downtimes = [] } = useSST({
+    tag: selectedTag,
+    start: pastDate.toISOString(),
+    end: currentDate.toISOString(),
+  });
+  useEffect(() => {
+    if (downtimes?.length > 0) {
+      setSstDtArray(
+        downtimes.map(([start, end, duration]) => ({
+          startTime: start,
+          endTime: end,
+          duration: duration,
+          type: downtimeTypes[Math.floor(Math.random() * downtimeTypes.length)],
+        }))
+      );
+      // console.log(sstDtArray);
+      // console.log(selectedTreeItem);
+      setSelectedTag(sstTags[Math.floor(Math.random() * sstTags.length)]);
+    }
+  }, [downtimes, selectedTreeItem]);
+
+  const [sstDtArray, setSstDtArray] = useState<DowntimeFullEntry[]>([]);
 
   return (
     <div className="p-3 flex flex-row gap-3">
@@ -93,7 +145,7 @@ export default function SstDowntimeAnalysisPage() {
               <JKD sampleData={downtimeData} />
             </TabsContent>
             <TabsContent value="table">
-              <TabularData />
+              <TabularData entries={sstDtArray} />
             </TabsContent>
           </Tabs>
         </CardContent>
