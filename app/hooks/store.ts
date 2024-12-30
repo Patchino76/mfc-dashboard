@@ -23,7 +23,7 @@ interface TreeFlowItemsProps {
 }
 
 export const useTreeFlowItems = create<TreeFlowItemsProps>((set) => ({
-  selectedTreeItem: "",
+  selectedTreeItem: "Питател 1",
   setSelectedTreeItem: (item: string) => set({ selectedTreeItem: item }),
 }));
 

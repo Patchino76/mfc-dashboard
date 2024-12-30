@@ -115,7 +115,7 @@ export default function SstDowntimeAnalysisPage() {
       <Card className="w-[85%]  flex flex-col">
         <CardHeader className="flex flex-row items-center justify-between space-y-2 pb-0">
           <CardTitle className="text-2xl font-medium justify-between">
-            ССТ - Анализ на престои
+            ССТ - престои на {selectedTreeItem}
           </CardTitle>
           <div className="flex items-center gap-2">
             <AudioWaveform className="scale-75" />
