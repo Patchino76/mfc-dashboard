@@ -1,0 +1,18 @@
+I want you to generate a synthetic pandas dataframe do log downtime data for a group or machines in manufacturing process.
+I will list and the columns:
+1. start_time
+2. end_time
+3. duration_minutes
+4. category
+5. stream_name
+6. machine_name
+
+- You can randomly pick the start_time and end_time from the range of 2025-01-01 to 2025-01-10.
+- Make the durations from 5 to 180 minutes, but not evenly distributed.
+- Assign to the category random  downtime reasons: ["механо", "електро", "технологични", "ппр", "системни"]
+- The stram_name can hold values: ["Поток 1", ... "Поток 13"]
+- each stream can have a list of machines:  [ "Питател 1", "Питател 2", "Питател 3", "Питател 4", "Питател 5", "Питател 6", "Дълга лента", "Горно сито", "Къса лента", "Течка", "Трошачка", "Долно сито", "Маслена станция", "ССТ 5", "ПВ 1", "ПВ 2/3", "ССТ 7", "ССТ 8", "ССТ 9", "МБ 1", "МБ 2" ] and they are stored in machine_name column.
+
+- The dataframe should have 1000 rows.
+
+You can provide the code to generate the dataframe in Python and a sample of the dataframe.
